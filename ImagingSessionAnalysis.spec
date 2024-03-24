@@ -30,11 +30,9 @@ pyz = PYZ(a.pure)
 exe = EXE(
     pyz,
     a.scripts,
-    a.binaries,
-    a.datas,
     [],
+    exclude_binaries=True,
     name='ImagingSessionAnalysis',
-    icon='Icons/AppIcon.ico',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -42,15 +40,30 @@ exe = EXE(
     console=False,
     disable_windowed_traceback=False,
     argv_emulation=False,
+    target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon='Icons/AppIcon.ico'
+)
+
+coll = COLLECT(
+    exe,
+    a.binaries,
+    a.datas,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    name='ImagingSessionAnalysis',
 )
 
 if platform.system() == 'Darwin':
-    info_plist = {'addition_prop': 'additional_value'}
-    app = BUNDLE(exe,
+    app = BUNDLE(coll,
                  name='ImagingSessionAnalysis.app',
                  bundle_identifier=None,
                  icon='Icons/AppIcon.ico',
                  version='0.4.0',
+                 info_plist={
+                        'CFBundleShortVersionString': 'Beta-Release (0.4.0)',
+                        'NSHighResolutionCapable': 'True'
+                    }
                 )
