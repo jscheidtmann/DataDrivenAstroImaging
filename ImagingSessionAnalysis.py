@@ -1,6 +1,8 @@
 import os
 import sys
 
+
+
 from PyQt6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
 from PyQt6.QtCore import Qt, QSize
 from PyQt6.QtGui import QBrush, QColor, QIcon
@@ -16,6 +18,8 @@ from GuideGraph import QGuideGraph
 from ImageWindow import ImageWindow
 from OpenNewSession import OpenNewSession
 
+is_frozen = getattr(sys, 'frozen', False)
+frozen_temp_path = getattr(sys, '_MEIPASS', '')
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -57,14 +61,19 @@ class MainWindow(QMainWindow):
         self.openSession = QToolButton()
         self.openSession.clicked.connect(self.openNewSession)
 
+        if is_frozen:
+            basedir = frozen_temp_path
+        else:
+            basedir = os.path.dirname(os.path.abspath(__file__))
+
         self.openSession.setFixedSize(QSize(32, 32))
-        self.openSession.setIcon(QIcon('Icons/folder.png'))
+        self.openSession.setIcon(QIcon(os.path.join(basedir, 'Icons/folder.png')))
         toolBarLayout.addWidget(self.openSession)
         toolBarLayout.addSpacing(8)
 
         self.changeSettings = QToolButton()
         self.changeSettings.setFixedSize(QSize(32, 32))
-        self.changeSettings.setIcon(QIcon('Icons/gearshape.png'))
+        self.changeSettings.setIcon(QIcon(os.path.join(basedir, 'Icons/gearshape.png')))
         toolBarLayout.addWidget(self.changeSettings)
 
         toolBarLayout.addStretch()
