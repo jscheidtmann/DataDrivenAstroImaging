@@ -1,7 +1,6 @@
+from astropy.io import fits
 
-import fitsio
 
-def getFitsHeader(fname):
-    return fitsio.read_header(fname)
-
+def getFitsHeader(name):
+    return fits.getheader(name)
 
