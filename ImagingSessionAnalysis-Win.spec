@@ -1,13 +1,22 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+import sys
+
+sys.setrecursionlimit(sys.getrecursionlimit() * 5)
+
+def get_resources():
+    data_files = []
+    for file_name in os.listdir('Icons'):
+        data_files.append((os.path.join('Icons', file_name), 'Icons'))
+    return data_files
 
 a = Analysis(
-    ['main.py'],
+    ['ImagingSessionAnalysis.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=get_resources(),
     hiddenimports=[],
-    hookspath=[],
+    hookspath=["pyi-hooks"],
     hooksconfig={},
     runtime_hooks=[],
     excludes=[],
@@ -20,7 +29,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='main',
+    name='ImagingSessionAnalysis',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -31,7 +40,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['Icon.png'],
+    icon='Icons/AppIcon.ico'
 )
 coll = COLLECT(
     exe,
@@ -40,11 +49,5 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name='main',
-)
-app = BUNDLE(
-    coll,
-    name='main.app',
-    icon='Icon.png',
-    bundle_identifier=None,
+    name='ImagingSessionAnalysis',
 )
