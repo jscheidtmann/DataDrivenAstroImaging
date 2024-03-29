@@ -13,5 +13,6 @@ create-dmg \
   --icon "ImagingSessionAnalysis.app" 175 120 \
   --hide-extension "ImagingSessionAnalysis.app" \
   --app-drop-link 425 120 \
+  --hdiutil-verbose \
   "dist/ImagingSessionAnalysis.dmg" \
   "dist/dmg/"

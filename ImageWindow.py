@@ -7,7 +7,6 @@ from PyQt6.QtWidgets import QVBoxLayout
 from FitsImage import FitsImage
 
 
-
 class ImageWindow(QDialog):
     imageWidget = None
 
