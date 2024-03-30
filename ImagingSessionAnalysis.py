@@ -376,12 +376,13 @@ class MainWindow(QMainWindow):
             index = currentRow[0]
             data = currentRow[1]
 
-            if graphType == DataColumn.MOONALT or graphType == DataColumn.SUNALT \
-                    or graphType == DataColumn.AZIMUTH or graphType == DataColumn.ALTITUDE:
-                data = data.degree
+            if data is not None: 
+                if graphType == DataColumn.MOONALT or graphType == DataColumn.SUNALT:
+                    data = data.degree
 
-            series.append(index, data)
-            values.append(data)
+                series.append(index, data)
+                values.append(data)
+            
             print(data)
 
         return values

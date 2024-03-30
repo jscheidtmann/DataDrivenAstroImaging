@@ -155,8 +155,8 @@ class ImageData:
         df['FilePath'] = df['FilePath'].apply(lambda path: os.path.basename(path))
         df = df.rename(columns={'FilePath': DataColumn.FNAME, })
         df = df[[DataColumn.FNAME, DataColumn.HFR, DataColumn.HFRStDev, DataColumn.DetectedStars,
-                 DataColumn.ADUMean, DataColumn.ADUMedian, DataColumn.ADUMin, DataColumn.ADUMax, DataColumn.FWHM,
-                 DataColumn.Eccentricity]]
+                 DataColumn.ADUMean, DataColumn.ADUMedian, DataColumn.ADUMin, DataColumn.ADUMax # , DataColumn.FWHM, DataColumn.Eccentricity
+                 ]]
 
         self.data = self.data.merge(df, on=DataColumn.FNAME)
 
@@ -173,6 +173,8 @@ class ImageData:
         return self.data[column].max()
 
     def getTextColor(self, value, column):
+        if value is None:
+            return QColor(0,0,0) # Black
         if (column == Columns.FNAME or column == Columns.BAYERPAT or column == Columns.CAMERA
                 or column == Columns.TELESCOPE or column == Columns.CCDSETTEMP or column == Columns.CCDTEMP):
             return QColor(160, 160, 160)
@@ -281,9 +283,11 @@ class ImageData:
             else:
                 return QColor(255, 0, 0)
 
-        return QColor(255, 255, 255)
+        return QColor(0, 0, 0) # TODO Depends on UI mode: Dark mode needs white, else black
 
     def format(self, value, column):
+        if value is None:
+            return "n/a"
         if column == Columns.FNAME:
             return value
         if column == Columns.FOCALLENGTH:
@@ -326,6 +330,7 @@ class ImageData:
             return formatAngle(value)
         if column == Columns.DEWPOINT:
             return "{value:.1f}".format(value=value)
+            
         if column == Columns.AMBIENTTEMP:
             return "{value:.1f}".format(value=value)
         if column == Columns.HFR or column == Columns.FWHM or column == Columns.Eccentricity:
