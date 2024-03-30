@@ -3,6 +3,8 @@ import os
 
 import pandas as pd
 from PyQt6.QtGui import QColor
+from astropy import units as u
+from astropy.coordinates import FK5, SkyCoord
 
 import DataColumn
 import DataColumn as Columns
@@ -12,8 +14,6 @@ from GuidingData import GuidingSessionData
 from GuidingFrameAnalysis import GuidingFrameAnalysis
 from JulianDate import convertToJulianDate
 from Spherical import getMoonAltAz, getSunAltAz, formatHMS, formatDMS, formatAngle, formatDMSLow
-from astropy.coordinates import FK5, SkyCoord
-from astropy import units as u
 
 
 class ImageData:

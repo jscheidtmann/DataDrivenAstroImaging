@@ -1,13 +1,12 @@
 import os
 import sys
 
-
-
+import qdarktheme
 from PyQt6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
 from PyQt6.QtCore import Qt, QSize
 from PyQt6.QtGui import QBrush, QColor, QIcon
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QComboBox, QToolButton, QTableWidgetItem
-from PyQt6.QtWidgets import QTabWidget, QTextBrowser
+from PyQt6.QtWidgets import QTabWidget
 from PyQt6.QtWidgets import QTableWidget
 from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout
 from astropy.coordinates import SkyOffsetFrame
@@ -482,8 +481,10 @@ if __name__ == "__main__":
     os.environ['PYQTGRAPH_QT_LIB'] = 'PyQt6'
 
     app = QApplication(sys.argv)
+    # Apply the complete dark theme to your Qt App.
+    qdarktheme.setup_theme()
+
     win = MainWindow()
-    # app.setStyleSheet(qdarkstyle.load_stylesheet(qt_api=os.environ['PYQTGRAPH_QT_LIB']))
 
     win.show()
     sys.exit(app.exec())

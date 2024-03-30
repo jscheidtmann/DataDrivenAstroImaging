@@ -1,24 +1,17 @@
 import os
 from multiprocessing import shared_memory
 
-
 import numpy as np
 from PIL import Image, ImageEnhance
 from astropy.io import fits
 from astropy.stats import sigma_clipped_stats
 from astropy.visualization import AsinhStretch
+from colour_demosaicing import (
+    demosaicing_CFA_Bayer_bilinear)
+from photutils.detection import IRAFStarFinder
 from scipy.optimize import root
 from skimage import io, exposure
 from skimage.util import img_as_float32
-from photutils.detection import IRAFStarFinder
-from photutils.datasets import load_star_image
-import colour
-
-from colour_demosaicing import (
-    demosaicing_CFA_Bayer_bilinear,
-    demosaicing_CFA_Bayer_Malvar2004,
-    demosaicing_CFA_Bayer_Menon2007,
-    mosaicing_CFA_Bayer)
 
 
 #from astropy.stats import mad_std

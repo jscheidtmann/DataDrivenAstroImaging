@@ -22,7 +22,7 @@ a = Analysis(
     hookspath=["pyi-hooks"],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=['tcl', 'tcl8', 'tk', 'jedi', 'fitsio'],
+    excludes=[],
     noarchive=False,
 )
 pyz = PYZ(a.pure)
@@ -52,7 +52,7 @@ coll = COLLECT(
     a.datas,
     strip=False,
     upx=True,
-    upx_exclude=['tcl', 'tcl8', 'tk', 'jedi', 'fitsio'],
+    upx_exclude=[],
     name='ImagingSessionAnalysis',
 )
 
