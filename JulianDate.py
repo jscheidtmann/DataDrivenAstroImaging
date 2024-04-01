@@ -19,7 +19,7 @@ def convertToJulianDate(dateTimeStr):
 def ddd(d, min, sec):
     sign = 1.0
     if (d < 0) or (min < 0) or (sec < 0.0):
-        sigm = -1.0
+        sign = -1.0
 
     d1 = abs(d)
     d2 = abs(min) / 60.0
