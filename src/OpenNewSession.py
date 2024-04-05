@@ -155,7 +155,7 @@ class OpenNewSession(QDialog):
 
     def OnLoadGuidingLog(self):
         logFile = QFileDialog.getOpenFileName(self, "Select the Guiding Log file...", filter="Text Files (*.txt)")
-        if logFile is not None:
+        if logFile is not None and not logFile[0] == '':
             self.imageData.readGuidingData(logFile[0])
             self.guidingText.setText(str(self.imageData.guidingData.count()) + " Guiding Frames loaded...")
             self.imageData.process()
@@ -193,6 +193,6 @@ class OpenNewSession(QDialog):
 
     def OnLoadMetadata(self):
         metafile = QFileDialog.getOpenFileName(self, "Select the Metadata file...", filter="CSV Files (*.csv)")
-        if metafile is not None:
+        if metafile is not None and not metafile[0] == '':
             self.imageData.readMetaData(metafile[0])
         return
