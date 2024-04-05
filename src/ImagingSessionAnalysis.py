@@ -392,7 +392,7 @@ class MainWindow(QMainWindow):
         seriesData = self.imageData.data[['INDEX']]
         for row in range(seriesData.shape[0]):
             currentRow = seriesData.iloc[row]
-            index = currentRow[0]
+            index = currentRow.iloc[0]
             indices.append(index)
 
         return indices
