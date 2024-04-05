@@ -43,11 +43,11 @@ def formathms(secs):
 
             if sec == 0:
                 return str(int(hours)).zfill(2) + " hours " \
-                       + str(int(min)).zfill(2) + "min "
+                    + str(int(min)).zfill(2) + "min "
 
             return str(int(hours)).zfill(2) + " hours " \
-                   + str(int(min)).zfill(2) + "min " \
-                   + str(int(sec)).zfill(2) + " sec"
+                + str(int(min)).zfill(2) + "min " \
+                + str(int(sec)).zfill(2) + " sec"
 
 
 def formatDMS(angle):
@@ -63,6 +63,7 @@ def formatDMS(angle):
 
     return sign + str(deg).zfill(2) + "° " + str(min).zfill(2) + "' " + '{:04.1f}'.format(secs)
 
+
 def formatDMSLow(angle):
     sign = '+'
     if angle < 0.0:
@@ -74,14 +75,14 @@ def formatDMSLow(angle):
 
     return sign + str(deg).zfill(2) + "° " + '{:04.2f}'.format(mins) + "'"
 
+
 def formatAngle(angle):
     dms = angle.signed_dms
     sign = '+'
     if dms.sign < 0.0:
         sign = '-'
 
-    return sign + "{value:.0f}".format(value = dms.d).zfill(2) + "° " + "{value:.0f}".format(value=dms.m).zfill(2) + "' " + '{:04.1f}'.format(dms.s)
-
+    return sign + "{0:02.0f}° {1:02.0f}' {2:04.1f}".format(dms.d, dms.m, dms.s)
 
 
 def formatHMS(angle):
@@ -96,7 +97,6 @@ def formatHMS(angle):
     secs = round(60.0 * (mins - min), 2)
 
     return sign + str(deg).zfill(2) + "h " + str(min).zfill(2) + "' " + '{:04.1f}'.format(secs)
-
 
 
 def getEarthLocation(lon, lat):
