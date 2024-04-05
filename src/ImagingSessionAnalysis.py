@@ -20,6 +20,7 @@ from OpenNewSession import OpenNewSession
 is_frozen = getattr(sys, 'frozen', False)
 frozen_temp_path = getattr(sys, '_MEIPASS', '')
 
+
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -179,7 +180,7 @@ class MainWindow(QMainWindow):
         dialog = OpenNewSession(self)
         dialog.set(self.imageData)
         dialog.execute()
-        if self.imageData is not None and self.imageData.data is not None and self.imageData.data.empty == False:
+        if self.imageData is not None and self.imageData.data is not None and not self.imageData.data.empty:
             self.updateSessionValues()
             self.updateTable()
             self.updateSessionGraph()
@@ -375,13 +376,13 @@ class MainWindow(QMainWindow):
             index = currentRow[0]
             data = currentRow[1]
 
-            if data is not None: 
+            if data is not None:
                 if graphType == DataColumn.MOONALT or graphType == DataColumn.SUNALT:
                     data = data.degree
 
                 series.append(index, data)
                 values.append(data)
-            
+
             print(data)
 
         return values

@@ -12,11 +12,7 @@ from photutils.detection import IRAFStarFinder
 from scipy.optimize import root
 from skimage import io, exposure
 from skimage.util import img_as_float32
-
-
-#from astropy.stats import mad_std
-
-
+# from astropy.stats import mad_std
 
 
 class FitsImage:
@@ -29,7 +25,6 @@ class FitsImage:
         self.fits_header = None
         self.width = 0
         self.height = 0
-       
 
     def fromFile(self, directory):
         self.img_format = os.path.splitext(directory)[1].lower()
@@ -43,7 +38,7 @@ class FitsImage:
 
             if len(imageData.shape) == 3:
                 imageData = np.moveaxis(imageData, 0, -1)
-           
+
         else:
             imageData = io.imread(directory)
             self.fits_header = fits.Header()
@@ -82,7 +77,6 @@ class FitsImage:
 
         return
 
-   
     def stretch(self):
         bg, sigma = (0.25, 3)
         return stretch(self.imageData, bg, sigma)
@@ -105,7 +99,6 @@ class FitsImage:
             L = sigma_clipped_stats(data=self.imageData[x1:x2, y1:y2, 0], cenfunc="median", stdfunc="std", grow=4)[1]
             return L
 
-
     def saturateImage(self):
         self.imageDisplaySaturated = self.imageDisplay
 
@@ -118,7 +111,7 @@ class FitsImage:
     def analyse(self):
 
         data = self.imageData
-        #image = self.imageStetchedData #stretch(self.imageData, 0.25, 3)
+        # image = self.imageStetchedData #stretch(self.imageData, 0.25, 3)
         mean, median, std = sigma_clipped_stats(data, sigma=3.0)
         threshold = median + (5.0 * std)
 
@@ -171,8 +164,6 @@ def stretch(data, bg, sigma):
     shm.unlink()
 
     return copy
-
-
 
 
 def MTF(data, midtone):

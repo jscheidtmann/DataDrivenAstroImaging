@@ -44,20 +44,6 @@ class OpenNewSession(QDialog):
         self.loadImages = QPushButton()
         self.loadImages.setText('Select Light frames...')
         self.loadImages.setStyleSheet('QPushButton { '
-                                  'background-color: #2B5DD1; color: #FFFFFF ; '
-                                  'padding: 2px; padding-left: 32px; padding-right: 32px; font: bold 14px ; '
-                                  'border-width: 0px; border-radius: 4px;  }'
-                                  'QPushButton:pressed {'
-                                  ' background-color: #2B5FF1; color: #FFFF00; }'
-                                  'QPushButton:hover:!pressed {'
-                                  ' background-color: #1B2DA1; color: #FFFF00;  }')
-        self.loadImages.pressed.connect(self.OnLoadLightFrames)
-
-        imageDataLayout.addWidget(self.loadImages)
-
-        self.loadMetadata = QPushButton()
-        self.loadMetadata.setText('Load Metadata...')
-        self.loadMetadata.setStyleSheet('QPushButton { '
                                       'background-color: #2B5DD1; color: #FFFFFF ; '
                                       'padding: 2px; padding-left: 32px; padding-right: 32px; font: bold 14px ; '
                                       'border-width: 0px; border-radius: 4px;  }'
@@ -65,6 +51,20 @@ class OpenNewSession(QDialog):
                                       ' background-color: #2B5FF1; color: #FFFF00; }'
                                       'QPushButton:hover:!pressed {'
                                       ' background-color: #1B2DA1; color: #FFFF00;  }')
+        self.loadImages.pressed.connect(self.OnLoadLightFrames)
+
+        imageDataLayout.addWidget(self.loadImages)
+
+        self.loadMetadata = QPushButton()
+        self.loadMetadata.setText('Load Metadata...')
+        self.loadMetadata.setStyleSheet('QPushButton { '
+                                        'background-color: #2B5DD1; color: #FFFFFF ; '
+                                        'padding: 2px; padding-left: 32px; padding-right: 32px; font: bold 14px ; '
+                                        'border-width: 0px; border-radius: 4px;  }'
+                                        'QPushButton:pressed {'
+                                        ' background-color: #2B5FF1; color: #FFFF00; }'
+                                        'QPushButton:hover:!pressed {'
+                                        ' background-color: #1B2DA1; color: #FFFF00;  }')
         self.loadMetadata.pressed.connect(self.OnLoadMetadata)
         self.loadMetadata.setEnabled(False)
         imageDataLayout.addWidget(self.loadMetadata)
@@ -87,13 +87,13 @@ class OpenNewSession(QDialog):
         self.loadGuidingLog = QPushButton()
         self.loadGuidingLog.setText('Load Guiding Log...')
         self.loadGuidingLog.setStyleSheet('QPushButton { '
-                                      'background-color: #2B5DD1; color: #FFFFFF ; '
-                                      'padding: 2px; padding-left: 32px; padding-right: 32px; font: bold 14px ; '
-                                      'border-width: 0px; border-radius: 4px;  }'
-                                      'QPushButton:pressed {'
-                                      ' background-color: #2B5FF1; color: #FFFF00; }'
-                                      'QPushButton:hover:!pressed {'
-                                      ' background-color: #1B2DA1; color: #FFFF00;  }')
+                                          'background-color: #2B5DD1; color: #FFFFFF ; '
+                                          'padding: 2px; padding-left: 32px; padding-right: 32px; font: bold 14px ; '
+                                          'border-width: 0px; border-radius: 4px;  }'
+                                          'QPushButton:pressed {'
+                                          ' background-color: #2B5FF1; color: #FFFF00; }'
+                                          'QPushButton:hover:!pressed {'
+                                          ' background-color: #1B2DA1; color: #FFFF00;  }')
 
         self.loadGuidingLog.pressed.connect(self.OnLoadGuidingLog)
         guidingLayout.addWidget(self.loadGuidingLog)
@@ -127,12 +127,12 @@ class OpenNewSession(QDialog):
         cancelButton.setText("Cancel")
         cancelButton.setContentsMargins(32, 4, 32, 4)
         cancelButton.setStyleSheet('QPushButton { background-color: #2B5DD1; color: #FFFFFF ; border-style: outset; '
-                               'padding: 2px; padding-left: 32px; padding-right: 32px; font: bold 14px ; '
-                               'border-width: 2px; border-radius: 10px; border-color: #2752B8; }'
-                               'QPushButton:pressed {'
-                               ' background-color: #2B5FF1; color: #FFFF00; border-color: #1712FF; border-style: none }'
-                               'QPushButton:hover:!pressed {'
-                               ' background-color: #1B2DA1; color: #FFFF00; border-color: #1712FF }')
+                                   'padding: 2px; padding-left: 32px; padding-right: 32px; font: bold 14px ; '
+                                   'border-width: 2px; border-radius: 10px; border-color: #2752B8; }'
+                                   'QPushButton:pressed {'
+                                   ' background-color: #2B5FF1; color: #FFFF00; border-color: #1712FF; border-style: none }'
+                                   'QPushButton:hover:!pressed {'
+                                   ' background-color: #1B2DA1; color: #FFFF00; border-color: #1712FF }')
 
         cancelButton.pressed.connect(self.OnCancelPressed)
 
@@ -188,7 +188,7 @@ class OpenNewSession(QDialog):
             for i, col in enumerate(self.imageData.getColumns()):
                 self.imagesTable.setItem(row, i, QTableWidgetItem(str(currentRow[col])))
 
-        self.loadMetadata.setEnabled(len(headers)>0)
+        self.loadMetadata.setEnabled(len(headers) > 0)
         return
 
     def OnLoadMetadata(self):

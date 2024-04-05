@@ -18,8 +18,8 @@ class QGuideGraph(QChartView):
         self.decPulses = pulses
 
     def drawForeground(self, painter, rect):
-        r = self.chart().plotArea()
-        h = (r.bottom() - r.top()) / 3.0
+        # r = self.chart().plotArea()
+        # h = (r.bottom() - r.top()) / 3.0
         if self.raPulses is not None:
             painter.save()
             pen = QPen(QColor(0x00, 0x00, 0xFF, 0x7F))

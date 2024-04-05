@@ -22,11 +22,10 @@ class ImageWindow(QDialog):
 
         self.setLayout(layout)
 
-
     def loadImage(self, filename):
         image = FitsImage()
         image.fromFile(filename)
-        #image.analyse()
+        # image.analyse()
 
         qim = ImageQt(image.imageDisplaySaturated)
         pixmap = QPixmap.fromImage(qim)

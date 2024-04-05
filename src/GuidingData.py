@@ -25,6 +25,7 @@ class GuidingFrame:
         self.settlingAfterDither = False
         self.errorCode = None
 
+
 class GuidingData:
     def __init__(self):
         self.guidingStart = None
@@ -96,7 +97,7 @@ class GuidingSessionData:
 
                 if line.startswith("RA Guide Speed"):
                     matches = re.findall(
-                        "Guide Speed = ([0123456789.]+) a-s\/s", line)
+                        "Guide Speed = ([0123456789.]+) a-s/s", line)
 
                     if len(matches) == 2:
                         raRate = parseFloat(matches[0])
@@ -145,7 +146,6 @@ class GuidingSessionData:
                 for j in range(start, end):
                     line = lines[j]
 
-
                     if not isGuidingData and line.startswith('Frame,'):
                         isGuidingData = True
                     elif isGuidingData:
@@ -160,10 +160,8 @@ class GuidingSessionData:
                                     isDithering = False
                                     continue
 
-
-
                         parts = line.split(',')
-                        if parts is not None and len(parts)>=17 and parts[0].isdigit():
+                        if parts is not None and len(parts) >= 17 and parts[0].isdigit():
                             frame = GuidingFrame()
                             frameNo = int(parts[0])
                             timeoffset = float(parts[1])
@@ -220,4 +218,3 @@ class GuidingSessionData:
                     frame.starMass /= guiding.maxStarmass
 
                 self.guidingData.append(guiding)
-

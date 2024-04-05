@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class Quality(Enum):
     Good = 1
     Medium = 2
