@@ -9,3 +9,7 @@ PyQt6_Charts==6.6.0
 PyQt6_sip==13.6.0
 scikit_image==0.22.0
 pyqtdarktheme==2.1.0
+
+# Development requirements
+flake8
+pytest
