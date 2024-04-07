@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 
 import qdarktheme
@@ -14,7 +15,6 @@ from astropy.coordinates import SkyOffsetFrame
 import DataColumn as DataColumn
 import ImageData as Data
 from GuideGraph import QGuideGraph
-from ImageWindow import ImageWindow
 from OpenNewSession import OpenNewSession
 
 is_frozen = getattr(sys, 'frozen', False)
@@ -91,7 +91,7 @@ class MainWindow(QMainWindow):
         self.imagesTable.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.tableFrame.layout().addWidget(self.imagesTable)
         self.imagesTable.currentCellChanged.connect(self.OnCurrentTableCellChanged)
-        self.imagesTable.cellDoubleClicked.connect(self.showImage)
+        self.imagesTable.cellDoubleClicked.connect(self.launchImageViewer)
 
         self.guidingChart = QChart()
         self.guidingChartView = QGuideGraph(self.guidingChart)
@@ -190,15 +190,6 @@ class MainWindow(QMainWindow):
     def OnCurrentTableCellChanged(self):
         self.updateGuideGraph()
         return
-
-    def showImage(self):
-        if self.imageData.imageFolder is not None:
-            rowIndex = self.imagesTable.currentRow()
-            filename = self.imageData.data.iloc[rowIndex][DataColumn.FNAME]
-            filepath = os.path.join(self.imageData.imageFolder, filename)
-            if self.imageWindow is None:
-                self.imageWindow = ImageWindow(self)
-            self.imageWindow.show(filepath)
 
     def updateTable(self):
         headers = list(self.imageData.data)
@@ -476,6 +467,19 @@ class MainWindow(QMainWindow):
         self.guidingChartView.setDecGuidePulses(pulseDEC)
 
         self.guidingChartView.update()
+
+    def getImageViewer(self):
+        # TODO make this a configuration option
+        return {'linux': 'xdg-open', 'win32':'explorer', 'darwin':'open'}[sys.platform]
+
+    def launchImageViewer(self):
+        print("TODO Launch Image Viewer here.")
+        if self.imageData.imageFolder is not None:
+            rowIndex = self.imagesTable.currentRow()
+            filename = self.imageData.data.iloc[rowIndex][DataColumn.FNAME]
+            filepath = os.path.normpath(os.path.join(self.imageData.imageFolder, filename))
+            print(filepath)
+            subprocess.Popen([self.getImageViewer(), filepath])
 
 
 if __name__ == "__main__":
