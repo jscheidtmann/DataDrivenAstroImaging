@@ -598,4 +598,6 @@ if __name__ == "__main__":
     win = MainWindow(logger)
 
     win.show()
-    sys.exit(app.exec())
+    exit_code = app.exec()
+    win.log.info("Stopping ImagagingSessionAnalysis")
+    sys.exit(exit_code)
