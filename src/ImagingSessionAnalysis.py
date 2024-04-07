@@ -1,15 +1,14 @@
 import os
 import subprocess
 import sys
+import logging
 
 import qdarktheme
 from PyQt6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
 from PyQt6.QtCore import Qt, QSize
 from PyQt6.QtGui import QBrush, QColor, QIcon
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QComboBox, QToolButton, QTableWidgetItem
-from PyQt6.QtWidgets import QTabWidget
-from PyQt6.QtWidgets import QTableWidget
-from PyQt6.QtWidgets import QVBoxLayout, QHBoxLayout
+from PyQt6.QtWidgets import QTabWidget, QTableWidget, QVBoxLayout, QHBoxLayout, QMessageBox
 from astropy.coordinates import SkyOffsetFrame
 
 import DataColumn as DataColumn
@@ -22,8 +21,25 @@ frozen_temp_path = getattr(sys, '_MEIPASS', '')
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, parent=None):
+    """ 
+    Main window and its functionality.
+
+    Conventions: 
+      createX... methods are invoked for creating the application.
+
+      On... methods are invoked by the UI (view). 
+       - all exceptions must be caught, logged and displayed in a message box. 
+    
+      updateX... methods are used to manage the model.
+
+      The main methods (see bottom of file) creates a logger objects, which is accessible as 'self.log'
+    """
+    
+    def __init__(self, logger, parent=None):
         super().__init__(parent)
+        self.log = logger
+
+        # UI Elements
         self.leftGraphBox = None
         self.rightGraphBox = None
         self.guidingChartView = None
@@ -46,6 +62,8 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Image Session Analysis")
         self.setMinimumSize(800, 600)
         self.resize(1200, 800)
+
+        # Model components
         self.imageData = Data.ImageData()
         self.imageFolder = None
         self.imageWindow = None
@@ -59,7 +77,7 @@ class MainWindow(QMainWindow):
         self.toolbar_widget.setLayout(toolBarLayout)
         toolBarLayout.setContentsMargins(4, 2, 4, 2)
         self.openSession = QToolButton()
-        self.openSession.clicked.connect(self.openNewSession)
+        self.openSession.clicked.connect(self.OnOpenNewSession)
 
         if is_frozen:
             basedir = frozen_temp_path
@@ -91,7 +109,7 @@ class MainWindow(QMainWindow):
         self.imagesTable.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.tableFrame.layout().addWidget(self.imagesTable)
         self.imagesTable.currentCellChanged.connect(self.OnCurrentTableCellChanged)
-        self.imagesTable.cellDoubleClicked.connect(self.launchImageViewer)
+        self.imagesTable.cellDoubleClicked.connect(self.OnLaunchImageViewer)
 
         self.guidingChart = QChart()
         self.guidingChartView = QGuideGraph(self.guidingChart)
@@ -160,7 +178,7 @@ class MainWindow(QMainWindow):
         tabWidget = QTabWidget()
         tabWidget.addTab(self.createImageTable(), "Data")
         tabWidget.addTab(self.createGraphView(), "Charts")
-        tabWidget.addTab(self.createDitherView(), "Image Center")
+        tabWidget.addTab(self.createDitherView(), "Dither")
 
         return tabWidget
 
@@ -174,24 +192,61 @@ class MainWindow(QMainWindow):
         self.main_widget = QWidget(self)
         self.main_widget.setLayout(mainVertical)
         self.setCentralWidget(self.main_widget)
+
+        self.log.info("Starting ImagingSessionAnalysis")
         return
 
-    def openNewSession(self):
-        dialog = OpenNewSession(self)
-        dialog.set(self.imageData)
-        dialog.execute()
-        if self.imageData is not None and self.imageData.data is not None and not self.imageData.data.empty:
-            self.updateSessionValues()
-            self.updateTable()
-            self.updateSessionGraph()
-            self.updateDitherGraph()
-        return
+    def OnOpenNewSession(self):
+        try: 
+            dialog = OpenNewSession(self)
+            dialog.set(self.imageData)
+            dialog.execute()
+            if self.imageData is not None and self.imageData.data is not None and not self.imageData.data.empty:
+                self.log.info("Imported Session Data")
+                self.updateSessionValues()
+                self.updateTable()
+                self.updateSessionGraph()
+                self.updateDitherGraph()
+            return
+        except Exception as e:
+            self.log.error("Error opening new session")
+            self.log.exception(e)
+            dlg = QMessageBox(self)
+            dlg.setWindowTitle("An Error occurred")
+            dlg.setText(str(e))
+            dlg.exec()
+
+    def OnLaunchImageViewer(self):
+        try:
+            if self.imageData.imageFolder is not None:
+                rowIndex = self.imagesTable.currentRow()
+                filename = self.imageData.data.iloc[rowIndex][DataColumn.FNAME]
+                filepath = os.path.normpath(os.path.join(self.imageData.imageFolder, filename))
+                self.log.info("Starting image viewer on %s", filepath)
+                subprocess.Popen([self.getImageViewer(), filepath])
+        except Exception as e:
+            self.log.error("Error launching the image viewer", repr(e))
+            # TODO Display error message box.
+            dlg = QMessageBox(self)
+            dlg.setWindowTitle("An Error occurred")
+            dlg.setText(str(e))
+            dlg.exec()
 
     def OnCurrentTableCellChanged(self):
-        self.updateGuideGraph()
-        return
+        try: 
+            self.updateGuideGraph()
+            return
+        except Exception as e:
+            self.log.error("Error in OnCurrentTableCellChanged", repr(e))
+            dlg = QMessageBox(self)
+            dlg.setWindowTitle("An error occurred")
+            dlg.setText(str(e))
+            dlg.exec()
 
     def updateTable(self):
+        if self.imageData is None:
+            self.log.warn("updateTable called, even though imageData is empty")
+            return
         headers = list(self.imageData.data)
         self.imagesTable.setRowCount(self.imageData.data.shape[0])
         self.imagesTable.setColumnCount(self.imageData.data.shape[1])
@@ -207,29 +262,67 @@ class MainWindow(QMainWindow):
                 self.imagesTable.setItem(row, i, item)
 
     def updateSessionValues(self):
+        if self.imageData is None:
+            self.log.warn("updateSessionValues is called, even though imageData is empty")
+            return
         values = self.imageData.getChartValues()
         self.leftGraphBox.addItems(values.keys())
         self.rightGraphBox.addItems(values.keys())
         return
 
     def OnLeftGraphValueIndexChanged(self, index):
-        values = self.imageData.getChartValues()
-        keys = list(values.keys())
-        key = keys[index]
-        self.sessionGraphLeft = values[key]
-        self.updateSessionGraph()
-        return
+        """
+        Update graph(s), when user selects another variable from the left combobox
+        """
+        if self.imageData is None:
+            return
+        try:
+            values = self.imageData.getChartValues()
+            keys = list(values.keys())
+            key = keys[index]
+            self.sessionGraphLeft = values[key]
+            self.log.info("Displaying left graph %s", key)
+            self.updateSessionGraph()
+            return
+        except Exception as e:
+            self.log.error("Error in OnLeftGraphValueIndexChange")
+            self.log.exception(e)
+            dlg = QMessageBox(self)
+            dlg.setWindowTitle("An error occurred")
+            dlg.setText(str(e))
+            dlg.exec()
 
     def OnRightGraphValueIndexChanged(self, index):
-        values = self.imageData.getChartValues()
-        keys = list(values.keys())
-        key = keys[index]
-        self.sessionGraphRight = values[key]
-        self.updateSessionGraph()
-        return
+        """
+        Update graph(s), when user selects antoher variable from the right combobox
+        """
+        if self.imageData is None:
+            return
+        try:
+            values = self.imageData.getChartValues()
+            keys = list(values.keys())
+            key = keys[index]
+            self.sessionGraphRight = values[key]
+            self.log.info("Displaying right graph %s", key)
+            self.updateSessionGraph()
+            return
+        except Exception as e:
+            self.log.error("Error in OnLeftGraphValueIndexChange")
+            self.log.exception(e)
+            dlg = QMessageBox(self)
+            dlg.setWindowTitle("An error occurred")
+            dlg.setText(str(e))
+            dlg.exec()
 
     def updateDitherGraph(self):
+        """
+        The Dither chart is created from the solved positions of the images.
 
+        uses a smash & rebuild strategy for the dither graph
+
+        May throw an Exception.
+        """
+        self.log.info("Updating dither graph")
         self.ditherChart.removeAllSeries()
         for axis in self.ditherChartAxis:
             self.ditherChart.removeAxis(axis)
@@ -251,7 +344,7 @@ class MainWindow(QMainWindow):
         x_axis.setTickType(QValueAxis.TickType.TicksDynamic)
         x_axis.setTickInterval(10)
         x_axis.setGridLineColor(QColor(128, 128, 128, 128))
-        x_axis.setTitleText("△RA")
+        x_axis.setTitleText("△RA / arc-sec")
         x_axis.setLabelsColor(QColor(255, 255, 255, 255))
         x_axis.setTitleBrush(QColor(255, 255, 255, 255))
         self.ditherChart.addAxis(x_axis, Qt.AlignmentFlag.AlignBottom)
@@ -263,7 +356,7 @@ class MainWindow(QMainWindow):
         y_axis.setTickType(QValueAxis.TickType.TicksDynamic)
         y_axis.setTickInterval(10)
         y_axis.setGridLineColor(QColor(128, 128, 128, 128))
-        y_axis.setTitleText("△DEC")
+        y_axis.setTitleText("△DEC / arc-sec")
         y_axis.setLabelsColor(QColor(255, 255, 255, 255))
         y_axis.setTitleBrush(QColor(255, 255, 255, 255))
         self.ditherChart.addAxis(y_axis, Qt.AlignmentFlag.AlignLeft)
@@ -276,11 +369,15 @@ class MainWindow(QMainWindow):
             series.append(ditherPositionsRA[i], ditherPositionsDEC[i])
 
         pen = series.pen()
-        pen.setColor(QColor(255, 255, 0, 255))
+        pen.setColor(QColor(255, 255, 0, 255))   # Yellow
         series.setPen(pen)
         self.ditherChart.addSeries(series)
 
     def updateSessionGraph(self):
+        """
+        Update the graph on the second tab
+        """
+        self.log.info("Updating session graph")
         self.chart.removeAllSeries()
         for axis in self.sessionGraphAxis:
             self.chart.removeAxis(axis)
@@ -360,6 +457,11 @@ class MainWindow(QMainWindow):
             self.sessionGraphAxis.append(yRight_axis)
 
     def createSeries(self, series, graphType):
+        """
+        create series for session graph(s)
+
+        helper method called by respective OnUpdate... methods
+        """
         values = []
         seriesData = self.imageData.data[['INDEX', graphType]]
         for row in range(seriesData.shape[0]):
@@ -390,6 +492,7 @@ class MainWindow(QMainWindow):
 
     def updateGuideGraph(self):
         rowIndex = self.imagesTable.currentRow()
+        self.log.info("Updating guide graph for row %i", rowIndex)
         jd1 = self.imageData.data.iloc[rowIndex][DataColumn.EXPSTARTJDD]
         duration = self.imageData.data.iloc[rowIndex][DataColumn.EXPOSURE]
         jd2 = jd1 + duration / 86400.0
@@ -469,27 +572,30 @@ class MainWindow(QMainWindow):
         self.guidingChartView.update()
 
     def getImageViewer(self):
+        """
+        Use sys.platform to determine, which process to start in order to open a file. 
+        """
         # TODO make this a configuration option
         return {'linux': 'xdg-open', 'win32':'explorer', 'darwin':'open'}[sys.platform]
-
-    def launchImageViewer(self):
-        print("TODO Launch Image Viewer here.")
-        if self.imageData.imageFolder is not None:
-            rowIndex = self.imagesTable.currentRow()
-            filename = self.imageData.data.iloc[rowIndex][DataColumn.FNAME]
-            filepath = os.path.normpath(os.path.join(self.imageData.imageFolder, filename))
-            print(filepath)
-            subprocess.Popen([self.getImageViewer(), filepath])
 
 
 if __name__ == "__main__":
     os.environ['PYQTGRAPH_QT_LIB'] = 'PyQt6'
 
+    # Setup two log handlers: One for the console, one (more detailed) to a file.
+    chdlr = logging.StreamHandler()
+    fhdlr = logging.FileHandler('ImagingSessionAnalysis.log', 'a', encoding='utf-8')
+    fhdlr.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s:%(message)s'))
+    logging.getLogger().addHandler(chdlr)
+    logging.getLogger().addHandler(fhdlr)
+    logging.getLogger().setLevel(logging.INFO)  # TODO Make default log level a configuration item.
+
     app = QApplication(sys.argv)
     # Apply the complete dark theme to your Qt App.
     qdarktheme.setup_theme()
 
-    win = MainWindow()
+    logger = logging.getLogger("ImageSessionAnalysis")
+    win = MainWindow(logger)
 
     win.show()
     sys.exit(app.exec())
