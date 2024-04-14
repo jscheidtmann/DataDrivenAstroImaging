@@ -584,9 +584,9 @@ if __name__ == "__main__":
 
     # Setup two log handlers: One for the console, one (more detailed) to a file.
     chdlr = logging.StreamHandler()
+    logging.getLogger().addHandler(chdlr)
     fhdlr = logging.FileHandler('ImagingSessionAnalysis.log', 'a', encoding='utf-8')
     fhdlr.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s:%(message)s'))
-    logging.getLogger().addHandler(chdlr)
     logging.getLogger().addHandler(fhdlr)
     logging.getLogger().setLevel(logging.INFO)  # TODO Make default log level a configuration item.
 
@@ -594,10 +594,10 @@ if __name__ == "__main__":
     # Apply the complete dark theme to your Qt App.
     qdarktheme.setup_theme()
 
-    logger = logging.getLogger("ImageSessionAnalysis")
+    logger = logging.getLogger("ImagingSessionAnalysis")
     win = MainWindow(logger)
 
     win.show()
     exit_code = app.exec()
-    win.log.info("Stopping ImagagingSessionAnalysis")
+    win.log.info("Stopping ImagingSessionAnalysis with exit code %i", exit_code)
     sys.exit(exit_code)
