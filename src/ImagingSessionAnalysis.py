@@ -24,17 +24,17 @@ class MainWindow(QMainWindow):
     """ 
     Main window and its functionality.
 
-    Conventions: 
+    Conventions:
       createX... methods are invoked for creating the application.
 
-      On... methods are invoked by the UI (view). 
-       - all exceptions must be caught, logged and displayed in a message box. 
-    
+      On... methods are invoked by the UI (view).
+       - all exceptions must be caught, logged and displayed in a message box.
+
       updateX... methods are used to manage the model.
 
       The main methods (see bottom of file) creates a logger objects, which is accessible as 'self.log'
     """
-    
+
     def __init__(self, logger, parent=None):
         super().__init__(parent)
         self.log = logger
@@ -197,7 +197,7 @@ class MainWindow(QMainWindow):
         return
 
     def OnOpenNewSession(self):
-        try: 
+        try:
             dialog = OpenNewSession(self)
             dialog.set(self.imageData)
             dialog.execute()
@@ -233,7 +233,7 @@ class MainWindow(QMainWindow):
             dlg.exec()
 
     def OnCurrentTableCellChanged(self):
-        try: 
+        try:
             self.updateGuideGraph()
             return
         except Exception as e:
@@ -573,10 +573,10 @@ class MainWindow(QMainWindow):
 
     def getImageViewer(self):
         """
-        Use sys.platform to determine, which process to start in order to open a file. 
+        Use sys.platform to determine, which process to start in order to open a file.
         """
         # TODO make this a configuration option
-        return {'linux': 'xdg-open', 'win32':'explorer', 'darwin':'open'}[sys.platform]
+        return {'linux': 'xdg-open', 'win32': 'explorer', 'darwin': 'open'}[sys.platform]
 
 
 if __name__ == "__main__":
