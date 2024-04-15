@@ -10,6 +10,7 @@ from PyQt6.QtGui import QBrush, QColor, QIcon
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QComboBox, QToolButton, QTableWidgetItem
 from PyQt6.QtWidgets import QTabWidget, QTableWidget, QVBoxLayout, QHBoxLayout, QMessageBox
 from astropy.coordinates import SkyOffsetFrame
+from Spherical import formatHMS, formatDMS, formatAngle, formatDMSLow
 
 import DataColumn as DataColumn
 import SessionData as Data
@@ -244,6 +245,177 @@ class MainWindow(QMainWindow):
             dlg.setText(str(e))
             dlg.exec()
 
+    def getTextColor(self, value, column):
+        if value is None:
+            return QColor(0, 0, 0)  # Black
+        if (column == DataColumn.FNAME or column == DataColumn.BAYERPAT or column == DataColumn.CAMERA
+                or column == DataColumn.TELESCOPE or column == DataColumn.CCDSETTEMP or column == DataColumn.CCDTEMP):
+            return QColor(160, 160, 160)
+        if column == DataColumn.FOCALLENGTH or column == DataColumn.FOCRATIO:
+            return QColor(160, 160, 160)
+        if column == DataColumn.RMS or column == DataColumn.RMSRA or column == DataColumn.RMSDEC:
+            pxs = self.getPixelScale()
+            if value < 0.66 * pxs:
+                return QColor(0, 255, 0)
+            elif value < pxs:
+                return QColor(255, 255, 0)
+            else:
+                return QColor(255, 0, 0)
+        if column == DataColumn.DetectedStars:
+            maxStars = self.getMax(DataColumn.DetectedStars)
+            if value < 0.75 * maxStars:
+                return QColor(255, 0, 0)
+            elif value < 0.9 * maxStars:
+                return QColor(255, 255, 0)
+            else:
+                return QColor(0, 255, 0)
+
+        if column == DataColumn.ADUMean or column == DataColumn.ADUMedian:
+            minValue = self.getMin(column)
+            if value > 1.25 * minValue:
+                return QColor(255, 0, 0)
+            elif value > 1.1 * minValue:
+                return QColor(255, 255, 0)
+            else:
+                return QColor(0, 255, 0)
+
+        if column == DataColumn.SUNALT:
+            if value.deg < -18.0:
+                return QColor(0, 255, 0)
+            elif value.deg < -12.0:
+                return QColor(255, 255, 0)
+            else:
+                return QColor(255, 0, 0)
+
+        if column == DataColumn.MOONALT:
+            if value.deg < 0.0:
+                return QColor(0, 255, 0)
+            elif value.deg < 10.0:
+                return QColor(255, 255, 0)
+            else:
+                return QColor(255, 0, 0)
+
+        if column == DataColumn.HUMIDITY:
+            if value < 70.0:
+                return QColor(0, 255, 0)
+            elif value < 90.0:
+                return QColor(255, 255, 0)
+            else:
+                return QColor(255, 0, 0)
+
+        if column == DataColumn.AIRMASS:
+            minValue = self.getMin(column)
+            if value > 3.0 * minValue:
+                return QColor(255, 0, 0)
+            elif value > 1.5 * minValue:
+                return QColor(255, 255, 0)
+            else:
+                return QColor(0, 255, 0)
+
+        if column == DataColumn.HFR:
+            minValue = self.getMin(column)
+            if value < 1.1 * minValue:
+                return QColor(0, 255, 0)
+            elif value < 1.25 * minValue:
+                return QColor(255, 255, 0)
+            else:
+                return QColor(255, 0, 0)
+
+        if column == DataColumn.FWHM:
+            minValue = self.getMin(column)
+            if value < 1.1 * minValue:
+                return QColor(0, 255, 0)
+            elif value < 1.25 * minValue:
+                return QColor(255, 255, 0)
+            else:
+                return QColor(255, 0, 0)
+
+        if column == DataColumn.GUIDINGPIXRA or column == DataColumn.GUIDINGPIXDEC or column == DataColumn.GUIDINGPIX:
+            if value < 0.66:
+                return QColor(0, 255, 0)
+            elif value < 0.9:
+                return QColor(255, 255, 0)
+            else:
+                return QColor(255, 0, 0)
+
+        if column == DataColumn.GUIDINGMINRA or column == DataColumn.GUIDINGMINDEC or \
+                column == DataColumn.GUIDINGMAXRA or column == DataColumn.GUIDINGMAXDEC:
+            pxs = self.getPixelScale()
+            if abs(value) < 0.8 * pxs:
+                return QColor(0, 255, 0)
+            elif abs(value) < pxs:
+                return QColor(255, 255, 0)
+            else:
+                return QColor(255, 0, 0)
+
+        if column == DataColumn.Eccentricity:
+            if value < 0.3:
+                return QColor(0, 255, 0)
+            elif value < 0.5:
+                return QColor(255, 255, 0)
+            else:
+                return QColor(255, 0, 0)
+
+        return QColor(255, 255, 255)  # TODO Depends on UI mode: Dark mode needs white, else black
+
+    def format(self, value, column):
+        if value is None:
+            return "n/a"
+        if column == DataColumn.FNAME:
+            return value
+        if column == DataColumn.FOCALLENGTH:
+            return str(value)
+        if column == DataColumn.FOCRATIO:
+            return str(value)
+        if column == DataColumn.RMS:
+            return "{value:.3f}".format(value=value)
+        if column == DataColumn.RMSRA:
+            return "{value:.3f}".format(value=value)
+        if column == DataColumn.RMSDEC:
+            return "{value:.3f}".format(value=value)
+        if column == DataColumn.GUIDINGPEAKSRA:
+            return str(value)
+        if column == DataColumn.GUIDINGPEAKSDEC:
+            return str(value)
+        if column == DataColumn.GUIDINGMINRA or column == DataColumn.GUIDINGMAXRA:
+            return "{value:.3f}".format(value=value)
+        if column == DataColumn.GUIDINGMINDEC or column == DataColumn.GUIDINGMAXDEC:
+            return "{value:.3f}".format(value=value)
+        if column == DataColumn.GUIDINGRMSSNR or column == DataColumn.GUIDINGMINSNR or column == DataColumn.GUIDINGMAXSNR:
+            return "{value:.3f}".format(value=value)
+        if column == DataColumn.GUIDINGPIX or column == DataColumn.GUIDINGPIXRA or column == DataColumn.GUIDINGPIXDEC:
+            return "{value:.2f}".format(value=value)
+        if column == DataColumn.GUIDINGMINSTARMASS:
+            return "{value:.3f}".format(value=value)
+        if column == DataColumn.AIRMASS:
+            return "{value:.3f}".format(value=value)
+        if column == DataColumn.RA:
+            return formatHMS(value / 15.0)
+        if column == DataColumn.DEC:
+            return formatDMS(value)
+        if column == DataColumn.ALTITUDE or column == DataColumn.AZIMUTH:
+            return formatDMSLow(value)
+        if column == DataColumn.SITELONG or column == DataColumn.SITELAT:
+            return formatDMSLow(value)
+        if column == DataColumn.MOONALT:
+            return formatAngle(value)
+        if column == DataColumn.SUNALT:
+            return formatAngle(value)
+        if column == DataColumn.DEWPOINT:
+            return "{value:.1f}".format(value=value)
+
+        if column == DataColumn.AMBIENTTEMP:
+            return "{value:.1f}".format(value=value)
+        if column == DataColumn.HFR or column == DataColumn.FWHM or column == DataColumn.Eccentricity:
+            return "{value:.2f}".format(value=value)
+        if column == DataColumn.HFRStDev:
+            return "{value:.2f}".format(value=value)
+        if column == DataColumn.ADUMean:
+            return "{value:.2f}".format(value=value)
+
+        return str(value)
+
+
     def updateTable(self):
         if self.sessionData is None:
             self.log.warn("updateTable called, even though sessionData is empty")
@@ -259,7 +431,7 @@ class MainWindow(QMainWindow):
             for i, col in enumerate(self.sessionData.getColumns()):
                 str = self.sessionData.format(currentRow[col], col)
                 item = QTableWidgetItem(str)
-                item.setForeground(QBrush(self.sessionData.getTextColor(currentRow[col], col)))
+                item.setForeground(QBrush(self.getTextColor(currentRow[col], col)))
                 self.imagesTable.setItem(row, i, item)
 
     def updateSessionValues(self):

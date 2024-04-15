@@ -2,7 +2,7 @@ import math
 import os
 
 import pandas as pd
-from PyQt6.QtGui import QColor
+# from PyQt6.QtGui import QColor
 from astropy import units as u
 from astropy.coordinates import FK5, SkyCoord
 
@@ -13,7 +13,7 @@ import FitsHeaderKeys as fhk
 from GuidingData import GuidingSessionData
 from GuidingFrameAnalysis import GuidingFrameAnalysis
 from JulianDate import convertToJulianDate
-from Spherical import getMoonAltAz, getSunAltAz, formatHMS, formatDMS, formatAngle, formatDMSLow
+from Spherical import getMoonAltAz, getSunAltAz # , formatHMS, formatDMS, formatAngle, formatDMSLow
 
 
 class SessionData:
@@ -151,176 +151,6 @@ class SessionData:
 
     def getMax(self, column):
         return self.data[column].max()
-
-    def getTextColor(self, value, column):
-        if value is None:
-            return QColor(0, 0, 0)  # Black
-        if (column == Columns.FNAME or column == Columns.BAYERPAT or column == Columns.CAMERA
-                or column == Columns.TELESCOPE or column == Columns.CCDSETTEMP or column == Columns.CCDTEMP):
-            return QColor(160, 160, 160)
-        if column == Columns.FOCALLENGTH or column == Columns.FOCRATIO:
-            return QColor(160, 160, 160)
-        if column == Columns.RMS or column == Columns.RMSRA or column == Columns.RMSDEC:
-            pxs = self.getPixelScale()
-            if value < 0.66 * pxs:
-                return QColor(0, 255, 0)
-            elif value < pxs:
-                return QColor(255, 255, 0)
-            else:
-                return QColor(255, 0, 0)
-        if column == Columns.DetectedStars:
-            maxStars = self.getMax(Columns.DetectedStars)
-            if value < 0.75 * maxStars:
-                return QColor(255, 0, 0)
-            elif value < 0.9 * maxStars:
-                return QColor(255, 255, 0)
-            else:
-                return QColor(0, 255, 0)
-
-        if column == Columns.ADUMean or column == Columns.ADUMedian:
-            minValue = self.getMin(column)
-            if value > 1.25 * minValue:
-                return QColor(255, 0, 0)
-            elif value > 1.1 * minValue:
-                return QColor(255, 255, 0)
-            else:
-                return QColor(0, 255, 0)
-
-        if column == Columns.SUNALT:
-            if value.deg < -18.0:
-                return QColor(0, 255, 0)
-            elif value.deg < -12.0:
-                return QColor(255, 255, 0)
-            else:
-                return QColor(255, 0, 0)
-
-        if column == Columns.MOONALT:
-            if value.deg < 0.0:
-                return QColor(0, 255, 0)
-            elif value.deg < 10.0:
-                return QColor(255, 255, 0)
-            else:
-                return QColor(255, 0, 0)
-
-        if column == Columns.HUMIDITY:
-            if value < 70.0:
-                return QColor(0, 255, 0)
-            elif value < 90.0:
-                return QColor(255, 255, 0)
-            else:
-                return QColor(255, 0, 0)
-
-        if column == Columns.AIRMASS:
-            minValue = self.getMin(column)
-            if value > 3.0 * minValue:
-                return QColor(255, 0, 0)
-            elif value > 1.5 * minValue:
-                return QColor(255, 255, 0)
-            else:
-                return QColor(0, 255, 0)
-
-        if column == Columns.HFR:
-            minValue = self.getMin(column)
-            if value < 1.1 * minValue:
-                return QColor(0, 255, 0)
-            elif value < 1.25 * minValue:
-                return QColor(255, 255, 0)
-            else:
-                return QColor(255, 0, 0)
-
-        if column == Columns.FWHM:
-            minValue = self.getMin(column)
-            if value < 1.1 * minValue:
-                return QColor(0, 255, 0)
-            elif value < 1.25 * minValue:
-                return QColor(255, 255, 0)
-            else:
-                return QColor(255, 0, 0)
-
-        if column == Columns.GUIDINGPIXRA or column == Columns.GUIDINGPIXDEC or column == Columns.GUIDINGPIX:
-            if value < 0.66:
-                return QColor(0, 255, 0)
-            elif value < 0.9:
-                return QColor(255, 255, 0)
-            else:
-                return QColor(255, 0, 0)
-
-        if column == Columns.GUIDINGMINRA or column == Columns.GUIDINGMINDEC or \
-                column == Columns.GUIDINGMAXRA or column == Columns.GUIDINGMAXDEC:
-            pxs = self.getPixelScale()
-            if abs(value) < 0.8 * pxs:
-                return QColor(0, 255, 0)
-            elif abs(value) < pxs:
-                return QColor(255, 255, 0)
-            else:
-                return QColor(255, 0, 0)
-
-        if column == Columns.Eccentricity:
-            if value < 0.3:
-                return QColor(0, 255, 0)
-            elif value < 0.5:
-                return QColor(255, 255, 0)
-            else:
-                return QColor(255, 0, 0)
-
-        return QColor(255, 255, 255)  # TODO Depends on UI mode: Dark mode needs white, else black
-
-    def format(self, value, column):
-        if value is None:
-            return "n/a"
-        if column == Columns.FNAME:
-            return value
-        if column == Columns.FOCALLENGTH:
-            return str(value)
-        if column == Columns.FOCRATIO:
-            return str(value)
-        if column == Columns.RMS:
-            return "{value:.3f}".format(value=value)
-        if column == Columns.RMSRA:
-            return "{value:.3f}".format(value=value)
-        if column == Columns.RMSDEC:
-            return "{value:.3f}".format(value=value)
-        if column == Columns.GUIDINGPEAKSRA:
-            return str(value)
-        if column == Columns.GUIDINGPEAKSDEC:
-            return str(value)
-        if column == Columns.GUIDINGMINRA or column == Columns.GUIDINGMAXRA:
-            return "{value:.3f}".format(value=value)
-        if column == Columns.GUIDINGMINDEC or column == Columns.GUIDINGMAXDEC:
-            return "{value:.3f}".format(value=value)
-        if column == Columns.GUIDINGRMSSNR or column == Columns.GUIDINGMINSNR or column == Columns.GUIDINGMAXSNR:
-            return "{value:.3f}".format(value=value)
-        if column == Columns.GUIDINGPIX or column == Columns.GUIDINGPIXRA or column == Columns.GUIDINGPIXDEC:
-            return "{value:.2f}".format(value=value)
-        if column == Columns.GUIDINGMINSTARMASS:
-            return "{value:.3f}".format(value=value)
-        if column == Columns.AIRMASS:
-            return "{value:.3f}".format(value=value)
-        if column == Columns.RA:
-            return formatHMS(value / 15.0)
-        if column == Columns.DEC:
-            return formatDMS(value)
-        if column == Columns.ALTITUDE or column == Columns.AZIMUTH:
-            return formatDMSLow(value)
-        if column == Columns.SITELONG or column == Columns.SITELAT:
-            return formatDMSLow(value)
-        if column == Columns.MOONALT:
-            return formatAngle(value)
-        if column == Columns.SUNALT:
-            return formatAngle(value)
-        if column == Columns.DEWPOINT:
-            return "{value:.1f}".format(value=value)
-
-        if column == Columns.AMBIENTTEMP:
-            return "{value:.1f}".format(value=value)
-        if column == Columns.HFR or column == Columns.FWHM or column == Columns.Eccentricity:
-            return "{value:.2f}".format(value=value)
-        if column == Columns.HFRStDev:
-            return "{value:.2f}".format(value=value)
-        if column == Columns.ADUMean:
-            return "{value:.2f}".format(value=value)
-
-        return str(value)
 
     def parseLightFrames(self, folder, filenames):
         self.imageFolder = folder
