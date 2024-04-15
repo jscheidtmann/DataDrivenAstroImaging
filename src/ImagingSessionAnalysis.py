@@ -21,7 +21,7 @@ frozen_temp_path = getattr(sys, '_MEIPASS', '')
 
 
 class MainWindow(QMainWindow):
-    """ 
+    """
     Main window and its functionality.
 
     Conventions:
