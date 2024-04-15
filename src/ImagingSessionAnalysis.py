@@ -234,6 +234,7 @@ class MainWindow(QMainWindow):
 
     def OnCurrentTableCellChanged(self):
         try:
+            self.log.info("Image row changed")
             self.updateGuideGraph()
             return
         except Exception as e:
