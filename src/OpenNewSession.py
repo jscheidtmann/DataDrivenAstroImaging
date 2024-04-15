@@ -8,6 +8,12 @@ from PyQt6.QtWidgets import QWidget, QDialog, QGroupBox, QPushButton, QTableWidg
 
 
 class OpenNewSession(QDialog):
+    """
+    Open an imaging session, by opening and importing:
+      1) a directory full of *.fits,
+      2) Session Metadata information,
+      3) a PHD2 Guidelog
+    """
 
     def __init__(self, parent=None):
         super().__init__(parent)

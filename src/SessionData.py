@@ -16,7 +16,32 @@ from JulianDate import convertToJulianDate
 from Spherical import getMoonAltAz, getSunAltAz, formatHMS, formatDMS, formatAngle, formatDMSLow
 
 
-class ImageData:
+class SessionData:
+    """
+    Class managing data for analysis
+
+    We have three types of data:
+     1) Data which is one value per subframe, like noise level and
+     2) Data which is multiple data points per subframe, like the guiding graph.
+     3) Data what is not related to a subframe, such as focusing data
+
+    Implicit in all of this is a timeline.
+
+    Data that is one value per subframe is stored as a column in `self.data` a dataframe,
+    If some value does not exist for a subframe the respective entry is `None`.
+
+    Currently there's only `self.guidingdata` for information on guiding.
+
+    Subframes vs. Masterframes:
+    Subframes are ultimately integrated to form a masterframe.
+    As we are mostly interested, in how subframe statistics influence masterframe statistics,
+    a relationship is managed between those.
+
+    Column handling:
+     - There's a limited set of columns, that are expected to be present in all ImagingSessions,
+       these are defined in `DataColumn.MinColumns`. These can still be empty or not present for a subframe!
+     - The order of columns is determined by the order in which they are registered.
+    """
 
     def __init__(self):
         self.imageFolder = None

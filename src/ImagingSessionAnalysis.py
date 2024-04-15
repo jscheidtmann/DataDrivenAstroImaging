@@ -12,7 +12,7 @@ from PyQt6.QtWidgets import QTabWidget, QTableWidget, QVBoxLayout, QHBoxLayout, 
 from astropy.coordinates import SkyOffsetFrame
 
 import DataColumn as DataColumn
-import ImageData as Data
+import SessionData as Data
 from GuideGraph import QGuideGraph
 from OpenNewSession import OpenNewSession
 
@@ -25,14 +25,14 @@ class MainWindow(QMainWindow):
     Main window and its functionality.
 
     Conventions:
-      createX... methods are invoked for creating the application.
+      createX... methods are invoked for creating (parts of) the application.
 
       On... methods are invoked by the UI (view).
        - all exceptions must be caught, logged and displayed in a message box.
 
       updateX... methods are used to manage the model.
 
-      The main methods (see bottom of file) creates a logger objects, which is accessible as 'self.log'
+      The main method (see bottom of file) creates a logger object, which is accessible as 'self.log'
     """
 
     def __init__(self, logger, parent=None):
@@ -63,13 +63,13 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(800, 600)
         self.resize(1200, 800)
 
-        # Model components
-        self.imageData = Data.ImageData()
-        self.imageFolder = None
-        self.imageWindow = None
         self.sessionGraphLeft = None
         self.sessionGraphRight = None
         self.sessionGraphAxis = []
+
+        # Model components
+        self.sessionData = Data.SessionData()
+        self.sessionFolder = None
 
     def createToolBar(self):
         self.toolbar_widget = QWidget()
@@ -199,9 +199,9 @@ class MainWindow(QMainWindow):
     def OnOpenNewSession(self):
         try:
             dialog = OpenNewSession(self)
-            dialog.set(self.imageData)
+            dialog.set(self.sessionData)
             dialog.execute()
-            if self.imageData is not None and self.imageData.data is not None and not self.imageData.data.empty:
+            if self.sessionData is not None and self.sessionData.data is not None and not self.sessionData.data.empty:
                 self.log.info("Imported Session Data")
                 self.updateSessionValues()
                 self.updateTable()
@@ -218,10 +218,10 @@ class MainWindow(QMainWindow):
 
     def OnLaunchImageViewer(self):
         try:
-            if self.imageData.imageFolder is not None:
+            if self.sessionData.imageFolder is not None:
                 rowIndex = self.imagesTable.currentRow()
-                filename = self.imageData.data.iloc[rowIndex][DataColumn.FNAME]
-                filepath = os.path.normpath(os.path.join(self.imageData.imageFolder, filename))
+                filename = self.sessionData.data.iloc[rowIndex][DataColumn.FNAME]
+                filepath = os.path.normpath(os.path.join(self.sessionData.imageFolder, filename))
                 self.log.info("Starting image viewer on %s", filepath)
                 subprocess.Popen([self.getImageViewer(), filepath])
         except Exception as e:
@@ -244,28 +244,28 @@ class MainWindow(QMainWindow):
             dlg.exec()
 
     def updateTable(self):
-        if self.imageData is None:
-            self.log.warn("updateTable called, even though imageData is empty")
+        if self.sessionData is None:
+            self.log.warn("updateTable called, even though sessionData is empty")
             return
-        headers = list(self.imageData.data)
-        self.imagesTable.setRowCount(self.imageData.data.shape[0])
-        self.imagesTable.setColumnCount(self.imageData.data.shape[1])
+        headers = list(self.sessionData.data)
+        self.imagesTable.setRowCount(self.sessionData.data.shape[0])
+        self.imagesTable.setColumnCount(self.sessionData.data.shape[1])
         self.imagesTable.setHorizontalHeaderLabels(headers)
 
         # getting data from df is computationally costly so convert it to array first
-        for row in range(self.imageData.data.shape[0]):
-            currentRow = self.imageData.data.iloc[row]
-            for i, col in enumerate(self.imageData.getColumns()):
-                str = self.imageData.format(currentRow[col], col)
+        for row in range(self.sessionData.data.shape[0]):
+            currentRow = self.sessionData.data.iloc[row]
+            for i, col in enumerate(self.sessionData.getColumns()):
+                str = self.sessionData.format(currentRow[col], col)
                 item = QTableWidgetItem(str)
-                item.setForeground(QBrush(self.imageData.getTextColor(currentRow[col], col)))
+                item.setForeground(QBrush(self.sessionData.getTextColor(currentRow[col], col)))
                 self.imagesTable.setItem(row, i, item)
 
     def updateSessionValues(self):
-        if self.imageData is None:
-            self.log.warn("updateSessionValues is called, even though imageData is empty")
+        if self.sessionData is None:
+            self.log.warn("updateSessionValues is called, even though sessionData is empty")
             return
-        values = self.imageData.getChartValues()
+        values = self.sessionData.getChartValues()
         self.leftGraphBox.addItems(values.keys())
         self.rightGraphBox.addItems(values.keys())
         return
@@ -274,10 +274,10 @@ class MainWindow(QMainWindow):
         """
         Update graph(s), when user selects another variable from the left combobox
         """
-        if self.imageData is None:
+        if self.sessionData is None:
             return
         try:
-            values = self.imageData.getChartValues()
+            values = self.sessionData.getChartValues()
             keys = list(values.keys())
             key = keys[index]
             self.sessionGraphLeft = values[key]
@@ -296,10 +296,10 @@ class MainWindow(QMainWindow):
         """
         Update graph(s), when user selects antoher variable from the right combobox
         """
-        if self.imageData is None:
+        if self.sessionData is None:
             return
         try:
-            values = self.imageData.getChartValues()
+            values = self.sessionData.getChartValues()
             keys = list(values.keys())
             key = keys[index]
             self.sessionGraphRight = values[key]
@@ -329,7 +329,7 @@ class MainWindow(QMainWindow):
         self.ditherChart.legend().hide()
         self.ditherChartAxis.clear()
 
-        positions = self.imageData.getDitherData()
+        positions = self.sessionData.getDitherData()
         center = SkyOffsetFrame(origin=positions[0])
         ditherPositionsRA = []
         ditherPositionsDEC = []
@@ -463,7 +463,7 @@ class MainWindow(QMainWindow):
         helper method called by respective OnUpdate... methods
         """
         values = []
-        seriesData = self.imageData.data[['INDEX', graphType]]
+        seriesData = self.sessionData.data[['INDEX', graphType]]
         for row in range(seriesData.shape[0]):
             currentRow = seriesData.iloc[row]
             index = currentRow[0]
@@ -482,7 +482,7 @@ class MainWindow(QMainWindow):
 
     def getExposures(self):
         indices = []
-        seriesData = self.imageData.data[['INDEX']]
+        seriesData = self.sessionData.data[['INDEX']]
         for row in range(seriesData.shape[0]):
             currentRow = seriesData.iloc[row]
             index = currentRow.iloc[0]
@@ -493,10 +493,10 @@ class MainWindow(QMainWindow):
     def updateGuideGraph(self):
         rowIndex = self.imagesTable.currentRow()
         self.log.info("Updating guide graph for row %i", rowIndex)
-        jd1 = self.imageData.data.iloc[rowIndex][DataColumn.EXPSTARTJDD]
-        duration = self.imageData.data.iloc[rowIndex][DataColumn.EXPOSURE]
+        jd1 = self.sessionData.data.iloc[rowIndex][DataColumn.EXPSTARTJDD]
+        duration = self.sessionData.data.iloc[rowIndex][DataColumn.EXPOSURE]
         jd2 = jd1 + duration / 86400.0
-        frames = self.imageData.guidingData.getGuidingFrames(jd1, jd2)
+        frames = self.sessionData.guidingData.getGuidingFrames(jd1, jd2)
 
         seriesRA = QLineSeries()
         seriesDEC = QLineSeries()
