@@ -1,5 +1,10 @@
-src/__pycache__/*
-**/ImagingSessionAnalysis.log
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Log Files
+**/*.log
 
 # Ignore Python Virtual Environment Stuff
 Scripts
