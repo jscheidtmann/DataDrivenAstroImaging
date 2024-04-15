@@ -56,52 +56,6 @@ class SessionData:
     def getColumns(self):
         return self.data.columns
 
-    def getHeader(self):
-        header = dict()
-        for column in self.data.columns:
-            if column == DataColumn.RA:
-                header['RA'] = column
-            elif column == DataColumn.DEC:
-                header['DEC'] = column
-            elif column == DataColumn.RMS:
-                header['RMS'] = column
-            elif column == DataColumn.AIRMASS:
-                header['Airmass'] = column
-            elif column == DataColumn.EXPOSURE:
-                header['Exposure'] = column
-            elif column == DataColumn.SUNALT:
-                header['Altitude Sun'] = column
-            elif column == DataColumn.MOONALT:
-                header['Altitude Moon'] = column
-            elif column == DataColumn.AZIMUTH:
-                header['Azimuth'] = column
-            elif column == DataColumn.ALTITUDE:
-                header['Altitude'] = column
-            elif column == DataColumn.GUIDINGMINSTARMASS:
-                header['Starmass (Min)'] = column
-            elif column == DataColumn.GUIDINGPIX:
-                header['Guiding px'] = column
-            elif column == DataColumn.GUIDINGPIXRA:
-                header['Guiding px (RA)'] = column
-            elif column == DataColumn.GUIDINGMINSNR:
-                header['Guuiding SNR (Min)'] = column
-            elif column == DataColumn.GUIDINGRMSSNR:
-                header['Guiding SNR (Max)'] = column
-            elif column == DataColumn.GUIDINGMINRA:
-                header['Guiding RA (Min)'] = column
-            elif column == DataColumn.GUIDINGMAXRA:
-                header['Guiding RA (Max)'] = column
-            elif column == DataColumn.GUIDINGMINDEC:
-                header['Guiding DEC (Min)'] = column
-            elif column == DataColumn.GUIDINGMAXDEC:
-                header['Guiding DEC (Max)'] = column
-            elif column == DataColumn.GUIDINGPEAKSRA:
-                header['Guiding RA (Peaks)'] = column
-            elif column == DataColumn.GUIDINGPEAKSDEC:
-                header['Guiding DEC (Peaks)'] = column
-
-        return header
-
     def getChartValues(self):
         header = dict()
         header['None'] = None
