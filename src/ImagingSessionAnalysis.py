@@ -415,7 +415,6 @@ class MainWindow(QMainWindow):
 
         return str(value)
 
-
     def updateTable(self):
         if self.sessionData is None:
             self.log.warn("updateTable called, even though sessionData is empty")
