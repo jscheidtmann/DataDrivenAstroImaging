@@ -245,7 +245,7 @@ class MainWindow(QMainWindow):
             dlg.setText(str(e))
             dlg.exec()
 
-    def getTextColor(self, value, column):
+    def getTextColor(self, value, column, min=None, max=None, pxscale=None):
         if value is None:
             return QColor(0, 0, 0)  # Black
         if (column == DataColumn.FNAME or column == DataColumn.BAYERPAT or column == DataColumn.CAMERA
@@ -254,15 +254,16 @@ class MainWindow(QMainWindow):
         if column == DataColumn.FOCALLENGTH or column == DataColumn.FOCRATIO:
             return QColor(160, 160, 160)
         if column == DataColumn.RMS or column == DataColumn.RMSRA or column == DataColumn.RMSDEC:
-            pxs = self.getPixelScale()
-            if value < 0.66 * pxs:
+            assert pxscale is not None, "Pass pxscale for RMS, RMSRA or RMSDEC"
+            if value < 0.66 * pxscale:
                 return QColor(0, 255, 0)
-            elif value < pxs:
+            elif value < pxscale:
                 return QColor(255, 255, 0)
             else:
                 return QColor(255, 0, 0)
         if column == DataColumn.DetectedStars:
-            maxStars = self.getMax(DataColumn.DetectedStars)
+            assert max is not None, "Pass max for DetectedStars!"
+            maxStars = max
             if value < 0.75 * maxStars:
                 return QColor(255, 0, 0)
             elif value < 0.9 * maxStars:
@@ -271,7 +272,8 @@ class MainWindow(QMainWindow):
                 return QColor(0, 255, 0)
 
         if column == DataColumn.ADUMean or column == DataColumn.ADUMedian:
-            minValue = self.getMin(column)
+            assert min is not None, "Pass min fro ADUMedian!"
+            minValue = min
             if value > 1.25 * minValue:
                 return QColor(255, 0, 0)
             elif value > 1.1 * minValue:
@@ -304,16 +306,19 @@ class MainWindow(QMainWindow):
                 return QColor(255, 0, 0)
 
         if column == DataColumn.AIRMASS:
-            minValue = self.getMin(column)
+            assert min is not None, "pass in min-value for AIRMASS"
+            minValue = min
             if value > 3.0 * minValue:
                 return QColor(255, 0, 0)
             elif value > 1.5 * minValue:
                 return QColor(255, 255, 0)
+            
             else:
                 return QColor(0, 255, 0)
 
         if column == DataColumn.HFR:
-            minValue = self.getMin(column)
+            assert min is not None, "pass in min-value for HFR"
+            minValue = min
             if value < 1.1 * minValue:
                 return QColor(0, 255, 0)
             elif value < 1.25 * minValue:
@@ -322,7 +327,8 @@ class MainWindow(QMainWindow):
                 return QColor(255, 0, 0)
 
         if column == DataColumn.FWHM:
-            minValue = self.getMin(column)
+            assert min is not None, "pass in min-value for FWHM!"
+            minValue = min
             if value < 1.1 * minValue:
                 return QColor(0, 255, 0)
             elif value < 1.25 * minValue:
@@ -340,10 +346,10 @@ class MainWindow(QMainWindow):
 
         if column == DataColumn.GUIDINGMINRA or column == DataColumn.GUIDINGMINDEC or \
                 column == DataColumn.GUIDINGMAXRA or column == DataColumn.GUIDINGMAXDEC:
-            pxs = self.getPixelScale()
-            if abs(value) < 0.8 * pxs:
+            assert pxscale is not None, "pass in pixel scale for Guiding values"
+            if abs(value) < 0.8 * pxscale:
                 return QColor(0, 255, 0)
-            elif abs(value) < pxs:
+            elif abs(value) < pxscale:
                 return QColor(255, 255, 0)
             else:
                 return QColor(255, 0, 0)
@@ -428,9 +434,19 @@ class MainWindow(QMainWindow):
         for row in range(self.sessionData.data.shape[0]):
             currentRow = self.sessionData.data.iloc[row]
             for i, col in enumerate(self.sessionData.getColumns()):
-                str = self.sessionData.format(currentRow[col], col)
+                str = self.format(currentRow[col], col)
                 item = QTableWidgetItem(str)
-                item.setForeground(QBrush(self.getTextColor(currentRow[col], col)))
+                if col == DataColumn.AIRMASS or col == DataColumn.FWHM or col == DataColumn.HFR \
+                        or col == DataColumn.ADUMedian or col == DataColumn.ADUMean:
+                    item.setForeground(QBrush(self.getTextColor(currentRow[col], col, min=self.sessionData.getMin(col))))
+                elif col == DataColumn.DetectedStars:
+                    item.setForeground(QBrush(self.getTextColor(currentRow[col], col, max=self.sessionData.getMax(col))))
+                elif col == DataColumn.GUIDINGMINRA or col == DataColumn.GUIDINGMINDEC \
+                        or col == DataColumn.GUIDINGMAXRA or col == DataColumn.GUIDINGMAXDEC \
+                        or col == DataColumn.RMS or col == DataColumn.RMSRA or col == DataColumn.RMSDEC:
+                    item.setForeground(QBrush(self.getTextColor(currentRow[col], col, pxscale=self.sessionData.getPixelScale())))
+                else:
+                    item.setForeground(QBrush(self.getTextColor(currentRow[col], col)))
                 self.imagesTable.setItem(row, i, item)
 
     def updateSessionValues(self):
