@@ -6,12 +6,13 @@ sys.setrecursionlimit(sys.getrecursionlimit() * 5)
 
 def get_resources():
     data_files = []
-    for file_name in os.listdir('Icons'):
-        data_files.append((os.path.join('Icons', file_name), 'Icons'))
+    for file_name in os.listdir('src/Icons'):
+        data_files.append((os.path.join('src\\Icons', file_name), 'Icons'))
+    print("data_files:", data_files)
     return data_files
 
 a = Analysis(
-    ['ImagingSessionAnalysis.py'],
+    ['src/ImagingSessionAnalysis.py'],
     pathex=[],
     binaries=[],
     datas=get_resources(),
@@ -40,7 +41,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon='Icons/AppIcon.ico'
+    icon='src/Icons/AppIcon.ico'
 )
 coll = COLLECT(
     exe,

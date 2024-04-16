@@ -6,6 +6,10 @@ __pycache__/
 # Log Files
 **/*.log
 
+# build process
+build/** 
+dist/** 
+
 # Ignore Python Virtual Environment Stuff
 Scripts
 Include
