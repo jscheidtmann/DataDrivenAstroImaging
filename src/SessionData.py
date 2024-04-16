@@ -13,7 +13,7 @@ import FitsHeaderKeys as fhk
 from GuidingData import GuidingSessionData
 from GuidingFrameAnalysis import GuidingFrameAnalysis
 from JulianDate import convertToJulianDate
-from Spherical import getMoonAltAz, getSunAltAz 
+from Spherical import getMoonAltAz, getSunAltAz
 
 
 class SessionData:

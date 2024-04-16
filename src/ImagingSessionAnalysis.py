@@ -312,7 +312,6 @@ class MainWindow(QMainWindow):
                 return QColor(255, 0, 0)
             elif value > 1.5 * minValue:
                 return QColor(255, 255, 0)
-            
             else:
                 return QColor(0, 255, 0)
 
@@ -444,7 +443,8 @@ class MainWindow(QMainWindow):
                 elif col == DataColumn.GUIDINGMINRA or col == DataColumn.GUIDINGMINDEC \
                         or col == DataColumn.GUIDINGMAXRA or col == DataColumn.GUIDINGMAXDEC \
                         or col == DataColumn.RMS or col == DataColumn.RMSRA or col == DataColumn.RMSDEC:
-                    item.setForeground(QBrush(self.getTextColor(currentRow[col], col, pxscale=self.sessionData.getPixelScale())))
+                    item.setForeground(QBrush(self.getTextColor(currentRow[col], col, \
+                                       pxscale=self.sessionData.getPixelScale())))
                 else:
                     item.setForeground(QBrush(self.getTextColor(currentRow[col], col)))
                 self.imagesTable.setItem(row, i, item)
