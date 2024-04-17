@@ -91,7 +91,9 @@ jobs:
       - name: create ImagingSessionAnalysis-win64 bundle
         run: pyinstaller .\ImagingSessionAnalysis-Win.spec
       - name: zip Windows dist
-        run: Compress-Archive -Path dist/ImagingSessionAnalysis -Destination ImagingSessionAnalysis-${{github.ref_name}}win.zip
+        run: Compress-Archive -Path dist/ImagingSessionAnalysis -Destination ImagingSessionAnalysis-${{github.ref_name}}-win.zip
+      - name: show listing
+        run: dir .\\dist
       - name: store artifacts
         uses: actions/upload-artifact@v2
         with:
