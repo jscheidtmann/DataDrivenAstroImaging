@@ -178,7 +178,7 @@ jobs:
         with:
           name: ImagingSessionAnalysis-${{github.ref_name}}-macos-x86_64.dmg
       - name: create release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: |
             ImagingSessionAnalysis-${{github.ref_name}}-win.zip
