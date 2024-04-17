@@ -89,12 +89,14 @@ jobs:
   #    - name: patch version
   #      run: ./releng/patch_version.ps1
       - name: create ImagingSessionAnalysis-win64 bundle
-        run: python ./setup.py bdist_msi
+        run: pyinstaller .\ImagingSessionAnalysis-Win.spec
+      - name: zip Windows dist
+        run: Compress-Archive -Path dist/ImagingSessionAnalysis -Destination ImagingSessionAnalysis-win.zip
       - name: store artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: ImagingSessionAnalysis-${{github.ref_name}}-win64.msi
-          path: ./dist/ImagingSessionAnalysis-${{github.ref_name}}-win64.msi
+          name: ImagingSessionAnalysis-${{github.ref_name}}-win.zip
+          path: ./dist/ImagingSessionAnalysis-${{github.ref_name}}-win.zip
           retention-days: 5
 
   build-macos-x86_64:
@@ -124,14 +126,14 @@ jobs:
         run: brew install create-dmg
       - name: prep dmg directory
         run: |
-          mkdir -p dist/dmg &&
-          rm -rf dist/dmg/* &&
+          mkdir -p dist/dmg && `
+          rm -rf dist/dmg/* && `
           cp -r "dist/ImagingSessionAnalysis.app" dist/dmg
       - name: create .dmg
         run: |
           create-dmg \
             --volname "ImagingSessionAnalysis" \
-            --volicon "Icons/AppIcon.ico" \
+            --volicon "src/Icons/AppIcon.ico" \
             --window-pos 200 120 \
             --window-size 600 300 \
             --icon-size 100 \
@@ -164,7 +166,7 @@ jobs:
       - name: download windows exe
         uses: actions/download-artifact@v2
         with:
-          name: ImagingSessionAnalysis-${{github.ref_name}}-win64.msi
+          name: ImagingSessionAnalysis-${{github.ref_name}}-win.zip
       - name: download macos artifacts
         uses: actions/download-artifact@v2
         with:
