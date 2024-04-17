@@ -132,8 +132,8 @@ jobs:
         run: brew install create-dmg
       - name: prep dmg directory
         run: |
-          mkdir -p dist/dmg && `
-          rm -rf dist/dmg/* && `
+          mkdir -p dist/dmg && \
+          rm -rf dist/dmg/* && \
           cp -r "dist/ImagingSessionAnalysis.app" dist/dmg
       - name: create .dmg
         run: |
