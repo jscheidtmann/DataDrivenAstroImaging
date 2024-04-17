@@ -8,7 +8,7 @@ PyQt6==6.6.1
 PyQt6_Charts==6.6.0
 PyQt6_sip==13.6.0
 scikit_image==0.22.0
-pyqtdarktheme==2.1.0
+pyqtdarktheme
 
 # Development requirements are installed in the github workflow
 # You have to install these yourself:
