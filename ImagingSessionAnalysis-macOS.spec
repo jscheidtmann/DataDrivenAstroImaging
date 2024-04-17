@@ -6,15 +6,12 @@ sys.setrecursionlimit(sys.getrecursionlimit() * 5)
 
 def get_resources():
     data_files = []
-    for file_name in os.listdir('Icons'):
+    for file_name in os.listdir('src/Icons'):
         data_files.append((os.path.join('Icons', file_name), 'Icons'))
     return data_files
 
-
-
-
 a = Analysis(
-    ['ImagingSessionAnalysis.py'],
+    ['src/ImagingSessionAnalysis.py'],
     pathex=[],
     binaries=[],
     datas=get_resources(),
@@ -43,7 +40,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon='Icons/AppIcon.ico'
+    icon='src/Icons/AppIcon.ico'
 )
 
 coll = COLLECT(
@@ -60,7 +57,7 @@ if platform.system() == 'Darwin':
     app = BUNDLE(coll,
                  name='ImagingSessionAnalysis.app',
                  bundle_identifier=None,
-                 icon='Icons/AppIcon.ico',
+                 icon='src/Icons/AppIcon.ico',
                  version='0.4.0',
                  info_plist={
                         'CFBundleShortVersionString': 'Beta-Release (0.4.0)',
