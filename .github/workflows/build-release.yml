@@ -147,13 +147,13 @@ jobs:
             --hide-extension "ImagingSessionAnalysis.app" \
             --app-drop-link 425 120 \
             --hdiutil-verbose \
-            "dist/ImagingSessionAnalysis.dmg" \
+            "dist/ImagingSessionAnalysis-${{github.ref_name}}-macos-x86_64.dmg" \
             "dist/dmg/"
       - name: store artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: ImagingSessionAnalysis-macos-x86_64.dmg
-          path: ./dist/ImagingSessionAnalysis-macos-x86_64.dmg
+          name: ImagingSessionAnalysis-${{github.ref_name}}-macos-x86_64.dmg
+          path: ./dist/ImagingSessionAnalysis-${{github.ref_name}}-macos-x86_64.dmg
           retention-days: 5
 
   release:
@@ -176,12 +176,12 @@ jobs:
       - name: download macos artifacts
         uses: actions/download-artifact@v2
         with:
-          name: ImagingSessionAnalysis-macos-x86_64.dmg
+          name: ImagingSessionAnalysis-${{github.ref_name}}-macos-x86_64.dmg
       - name: create release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            ImagingSessionAnalysis-${{github.ref_name}}-win64.msi
-            ImagingSessionAnalysis-macos-x86_64.dmg
+            ImagingSessionAnalysis-${{github.ref_name}}-win.zip
+            ImagingSessionAnalysis-${{github.ref_name}}-macos-x86_64.dmg
       #      imagingsessionanalysis_${{github.ref_name}}-1_amd64.deb
       #      ImagingSessionAnalysis-linux.zip
