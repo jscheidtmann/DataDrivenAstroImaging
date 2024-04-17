@@ -1,4 +1,4 @@
-name: build-release
+name: Build Release from tag
 
 on:
   push:
@@ -43,35 +43,35 @@ jobs:
   #         path: ./dist/graxpert_${{github.ref_name}}-1_amd64.deb
   #         retention-days: 5
   
-  build-linux-zip:
-    runs-on: ubuntu-20.04
-    steps:
-      - name: setup python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.10'
-      - name: checkout repository
-        uses: actions/checkout@v3
-      - name: install dependencies
-        run: |
-          pip install setuptools wheel cx_freeze && \
-          pip install -r requirements.txt
-  #    - name: patch version
-  #      run: |
-  #        chmod u+x ./releng/patch_version.sh && \
-  #        ./releng/patch_version.sh
-      - name: create ImagingSessionAnalysis-linux bundle
-        run: python ./setup.py install_exe --install-dir=./dist/ImagingSessionAnalysis-linux
-      - name: zip ImagingSessionAnalysis-linux bundle
-        run: |
-          cd ./dist && \
-          zip -r ./ImagingSessionAnalysis-linux.zip ./ImagingSessionAnalysis-linux
-      - name: store artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: ImagingSessionAnalysis-linux.zip
-          path: ./dist/ImagingSessionAnalysis-linux.zip
-          retention-days: 5
+  # build-linux-zip:
+  #   runs-on: ubuntu-20.04
+  #   steps:
+  #     - name: setup python
+  #       uses: actions/setup-python@v2
+  #       with:
+  #         python-version: '3.10'
+  #     - name: checkout repository
+  #       uses: actions/checkout@v3
+  #     - name: install dependencies
+  #       run: |
+  #         pip install setuptools wheel cx_freeze && \
+  #         pip install -r requirements.txt
+  # #    - name: patch version
+  # #      run: |
+  # #        chmod u+x ./releng/patch_version.sh && \
+  # #        ./releng/patch_version.sh
+  #     - name: create ImagingSessionAnalysis-linux bundle
+  #       run: python ./setup.py install_exe --install-dir=./dist/ImagingSessionAnalysis-linux
+  #     - name: zip ImagingSessionAnalysis-linux bundle
+  #       run: |
+  #         cd ./dist && \
+  #         zip -r ./ImagingSessionAnalysis-linux.zip ./ImagingSessionAnalysis-linux
+  #     - name: store artifacts
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: ImagingSessionAnalysis-linux.zip
+  #         path: ./dist/ImagingSessionAnalysis-linux.zip
+  #         retention-days: 5
 
   build-windows:
     runs-on: windows-latest
@@ -93,8 +93,8 @@ jobs:
       - name: store artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: GraXpert-${{github.ref_name}}-win64.msi
-          path: ./dist/GraXpert-${{github.ref_name}}-win64.msi
+          name: ImagingSessionAnalysis-${{github.ref_name}}-win64.msi
+          path: ./dist/ImagingSessionAnalysis-${{github.ref_name}}-win64.msi
           retention-days: 5
 
   build-macos-x86_64:
@@ -119,15 +119,16 @@ jobs:
       - name: create ImagingSessionAnalysis-macos-x86_64 bundle
         # TODO migrate to cx_freeze
         run: |
-          pyinstaller \
-          ./GraXpert-macos-x86_64.spec
+          pyinstaller ./ImagingSessionAnalysis-macOS.spec
       - name: install create-dmg
         run: brew install create-dmg
-      - name: create .dmg
+      - name: prep dmg directory
         run: |
           mkdir -p dist/dmg &&
           rm -rf dist/dmg/* &&
           cp -r "dist/ImagingSessionAnalysis.app" dist/dmg
+      - name: create .dmg
+        run: |
           create-dmg \
             --volname "ImagingSessionAnalysis" \
             --volicon "Icons/AppIcon.ico" \
@@ -143,36 +144,36 @@ jobs:
       - name: store artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: GraXpert-macos-x86_64.dmg
-          path: ./dist/GraXpert-macos-x86_64.dmg
+          name: ImagingSessionAnalysis-macos-x86_64.dmg
+          path: ./dist/ImagingSessionAnalysis-macos-x86_64.dmg
           retention-days: 5
 
   release:
     runs-on: ubuntu-latest
     # needs: [build-linux-deb, build-linux-zip, build-windows, build-macos-x86_64]
-    needs: [build-linux-zip, build-windows, build-macos-x86_64]
+    needs: [build-windows, build-macos-x86_64]
     steps:
       # - name: download linux deb
       #   uses: actions/download-artifact@v2
       #   with:
-      #     name: graxpert_${{github.ref_name}}-1_amd64.deb
-      - name: download linux zip
-        uses: actions/download-artifact@v2
-        with:
-          name: GraXpert-linux.zip
+      #     name: imagingsessionanalysis_${{github.ref_name}}-1_amd64.deb
+      # - name: download linux zip
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: ImagingSessionAnalysis-linux.zip
       - name: download windows exe
         uses: actions/download-artifact@v2
         with:
-          name: GraXpert-${{github.ref_name}}-win64.msi
+          name: ImagingSessionAnalysis-${{github.ref_name}}-win64.msi
       - name: download macos artifacts
         uses: actions/download-artifact@v2
         with:
-          name: GraXpert-macos-x86_64.dmg
+          name: ImagingSessionAnalysis-macos-x86_64.dmg
       - name: create release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            GraXpert-linux.zip
-            GraXpert-${{github.ref_name}}-win64.msi
-            GraXpert-macos-x86_64.dmg
-      #      graxpert_${{github.ref_name}}-1_amd64.deb
+            ImagingSessionAnalysis-${{github.ref_name}}-win64.msi
+            ImagingSessionAnalysis-macos-x86_64.dmg
+      #      imagingsessionanalysis_${{github.ref_name}}-1_amd64.deb
+      #      ImagingSessionAnalysis-linux.zip
