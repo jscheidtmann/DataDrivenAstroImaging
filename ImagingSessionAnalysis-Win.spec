@@ -1,5 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
-
+import platform
 import sys
 
 sys.setrecursionlimit(sys.getrecursionlimit() * 5)
@@ -7,8 +7,7 @@ sys.setrecursionlimit(sys.getrecursionlimit() * 5)
 def get_resources():
     data_files = []
     for file_name in os.listdir('src/Icons'):
-        data_files.append((os.path.join('src\\Icons', file_name), 'Icons'))
-    print("data_files:", data_files)
+        data_files.append((os.path.join('src/Icons', file_name), 'Icons'))
     return data_files
 
 a = Analysis(
@@ -43,6 +42,7 @@ exe = EXE(
     entitlements_file=None,
     icon='src/Icons/AppIcon.ico'
 )
+
 coll = COLLECT(
     exe,
     a.binaries,
@@ -52,3 +52,15 @@ coll = COLLECT(
     upx_exclude=[],
     name='ImagingSessionAnalysis',
 )
+
+if platform.system() == 'Darwin':
+    app = BUNDLE(coll,
+                 name='ImagingSessionAnalysis.app',
+                 bundle_identifier=None,
+                 icon='src/Icons/AppIcon.ico',
+                 version='0.4.0',
+                 info_plist={
+                        'CFBundleShortVersionString': 'Beta-Release (0.4.0)',
+                        'NSHighResolutionCapable': 'True'
+                    }
+                )

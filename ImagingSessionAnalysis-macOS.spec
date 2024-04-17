@@ -7,7 +7,7 @@ sys.setrecursionlimit(sys.getrecursionlimit() * 5)
 def get_resources():
     data_files = []
     for file_name in os.listdir('src/Icons'):
-        data_files.append((os.path.join('Icons', file_name), 'Icons'))
+        data_files.append((os.path.join('src/Icons', file_name), 'Icons'))
     return data_files
 
 a = Analysis(
