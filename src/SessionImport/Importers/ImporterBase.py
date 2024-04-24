@@ -51,6 +51,9 @@ class ImporterBase:
                 self.skipped += 1
             item = self.queue.get()
     
+    def isrunning(self) -> bool:
+        return not self.queue.empty()
+    
     def getProcessedCounts(self) -> tuple[int, int, int]:
         return (self.processed, self.skipped, self.total)
 

@@ -1,8 +1,9 @@
 from ImporterBase import ImporterBase, ImporterMetaBase
-
+import os
 class PISubframeSelectorImporter(ImporterBase):
     def wantProcess(self, file: str) -> bool:
-        return file.startswith('SubframeSelector')
+        basename = os.path.basename(file)
+        return basename.startswith('SubframeSelector') or basename.startswith('MasterValues')
 
     def process(self, file: str) -> bool:
         return False

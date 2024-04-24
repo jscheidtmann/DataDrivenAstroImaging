@@ -11,7 +11,7 @@ class ImportFactory:
     def __init__(self):
         self.log = logging.getLogger("ImportFactory")
         self.directory = os.path.dirname(self._find_import_factory_location())
-        self.log.debug("Importing from: %s", self.directory)
+        self.log.info("Reading import modules from: %s", self.directory)
 
         self.importers_meta = self._find_and_instantiate_classes(self.directory, 'Meta')
 
@@ -95,4 +95,9 @@ if __name__ == "__main__":
     imp = factory.getImporter()
     imp.setImportDirectory(".")
     imp.runImport()
+    import time
+    while imp.isrunning():
+        imp.log.info("Waiting for import to finish") 
+        time.sleep(1)
+    imp.log.info("Import finished")
     sys.exit(0)
