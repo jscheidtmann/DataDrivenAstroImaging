@@ -4,17 +4,32 @@ import importlib.util
 import os
 import sys
 from Importers.ImporterBase import ImporterMetaBase, ImporterBase
+from Importer import Importer
+import logging
 
 class ImportFactory:
     def __init__(self):
-        self.directory = os.path.dirname(self.find_import_factory_location())
+        self.log = logging.getLogger("ImportFactory")
+        self.directory = os.path.dirname(self._find_import_factory_location())
+        self.log.debug("Importing from: %s", self.directory)
 
-        self.importers_meta = self.find_and_instantiate_classes(self.directory, 'Meta')
+        self.importers_meta = self._find_and_instantiate_classes(self.directory, 'Meta')
 
     def getMetaImporters(self) -> list[ImporterMetaBase]:
+        self.log.info("getMetaImporters called")
         return self.importers_meta
 
-    def find_import_factory_location(self) -> str:
+    def getImporter(self) -> Importer:
+        self.log.info("getImporter called")
+        importer = Importer()
+
+        for i in self.getMetaImporters():
+            self.log.info("Import module: %s", i.getShortName())
+            importer.addImporter(i.getInstance())
+    
+        return importer
+
+    def _find_import_factory_location(self) -> str:
         """
         Determine the directory, where this source code file is located.
         """
@@ -34,7 +49,7 @@ class ImportFactory:
             raise RuntimeError("Cannot determine location of ImportFactory.py")
 
 
-    def find_and_instantiate_classes(self, base_dir: str, class_suffix: str) -> list[object]:
+    def _find_and_instantiate_classes(self, base_dir: str, class_suffix: str) -> list[object]:
         instances = []
         
         # Remember the original sys.path
@@ -71,7 +86,13 @@ class ImportFactory:
         return instances
 
 if __name__ == "__main__":
+    chdlr = logging.StreamHandler()
+    logging.getLogger().addHandler(chdlr)
+    logging.getLogger().info("Test")
+    logging.getLogger().setLevel(logging.DEBUG)  
+
     factory = ImportFactory()
-    for imp in factory.getMetaImporters():
-        print(imp.getShortName())
+    imp = factory.getImporter()
+    imp.setImportDirectory(".")
+    imp.runImport()
     sys.exit(0)

@@ -1,7 +1,11 @@
 from ImporterBase import ImporterBase, ImporterMetaBase
 
 class PIMasterImporter(ImporterBase):
-    pass
+    def wantProcess(self, file: str) -> bool:
+        return file.endswith('.xisf')
+
+    def process(self, file: str) -> bool:
+        return False
 
 class PIMasterImporterMeta(ImporterMetaBase):
     def getShortName(self) -> str:
@@ -14,3 +18,7 @@ class PIMasterImporterMeta(ImporterMetaBase):
         if self.instance is None:
             self.instance = PIMasterImporter()
         return self.instance
+    
+    def getImpoterClass(self):
+        return PIMasterImporter
+    

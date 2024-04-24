@@ -1,8 +1,5 @@
 from ImporterBase import ImporterBase, ImporterMetaBase 
 
-class FitsImporter(ImporterBase):
-    pass
-
 class FitsImporterMeta(ImporterMetaBase):
     def getShortName(self):
         return "Fits File Importer"
@@ -15,7 +12,12 @@ class FitsImporterMeta(ImporterMetaBase):
             self.instance = FitsImporter()
         return self.instance
     
-if __name__ == '__main__':
-    importer = FitsImporterMeta()
-    print(importer.getShortName())
-    print(importer.getTooltipDescription())
+    def getImporterClass(self):
+        return FitsImporter
+
+class FitsImporter(ImporterBase):
+    def wantProcess(self, file: str) -> bool:
+        return file.endswith('.fits') or file.endswith('.fit') or file.endswith('.fts')
+
+    def process(self, file: str) -> bool:
+        return False

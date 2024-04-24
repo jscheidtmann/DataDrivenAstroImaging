@@ -1,7 +1,11 @@
 from ImporterBase import ImporterBase, ImporterMetaBase
 
 class SessionMetadataImporter(ImporterBase):
-    pass
+    def wantProcess(self, file: str) -> bool:
+        return file.startswith('Metadata')
+
+    def process(self, file: str) -> bool:
+        return False
 
 class SessionMetadataImporterMeta(ImporterMetaBase):
     def getShortName(self) -> str:
@@ -14,3 +18,7 @@ class SessionMetadataImporterMeta(ImporterMetaBase):
         if self.instance is None:
             self.instance = SessionMetadataImporter()
         return self.instance
+
+    def getImpoterClass(self):
+        return SessionMetadataImporter
+    

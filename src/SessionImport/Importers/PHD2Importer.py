@@ -1,7 +1,11 @@
 from ImporterBase import ImporterBase, ImporterMetaBase
 
 class PHD2Importer(ImporterBase):
-    pass
+    def wantProcess(self, file: str) -> bool:
+        return file.startswith('PHDGuidelog')
+
+    def process(self, file: str) -> bool:
+        return False
 
 class PHD2ImporterMeta(ImporterMetaBase):
     def getShortName(self) -> str:
@@ -14,3 +18,7 @@ class PHD2ImporterMeta(ImporterMetaBase):
         if self.instance is None:
             self.instance = PHD2Importer()
         return self.instance
+    
+    def getImporterClass(self):
+        return PHD2Importer
+    
