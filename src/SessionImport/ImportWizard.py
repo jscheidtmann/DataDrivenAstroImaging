@@ -7,17 +7,21 @@ from PyQt6.QtWidgets import QApplication, QWizard, QWizardPage, QVBoxLayout, QHB
 from PyQt6.QtCore import QSettings, Qt
 from PyQt6.QtCore import QThread, pyqtSignal
 
+from ImportFactory import ImportFactory
+
 class ImportWizard(QWizard):
-    def __init__(self, parent=None):
+    def __init__(self, factory: ImportFactory, parent=None):
         super(ImportWizard, self).__init__(parent)
-        self.page2widget = ProgressBarWidget()
-        self.page1 = self.addPage(ChooseSessionDirectoryWidget())
+        self.import_factory = factory
+        self.page2widget = ProgressBarWidget(factory)
+        self.page1 = self.addPage(ChooseSessionDirectoryWidget(factory))
         self.page2 = self.addPage(self.page2widget)
-        self.page3 = self.addPage(PageThree())
+        self.page3 = self.addPage(PageThree(factory))
         
         self.setWindowTitle("Import Wizard - Fake it, befor you make it")
-        
+
         self.currentIdChanged.connect(self.on_current_id_changed)
+
 
     def on_current_id_changed(self, id) -> None:
         if id == self.page1: 
@@ -28,6 +32,7 @@ class ImportWizard(QWizard):
         if id == self.page3:
             print("Page3")
 
+
 class ChooseSessionDirectoryWidget(QWizardPage):
     """
     Import Wizard: Select Directory to import
@@ -35,12 +40,14 @@ class ChooseSessionDirectoryWidget(QWizardPage):
     Displays a FileSelectionDialog that selects a Directory, 
     also display the import configuration in a list widget.
     """
-    def __init__(self):
+    def __init__(self, factory: ImportFactory):
         super().__init__()
+        self.import_factory = factory
 
         self.settings = QSettings('Bayer', 'MyTestApp')
         self.init_ui()
 
+ 
     def init_ui(self):
         # Set up the layout
         layout = QVBoxLayout()
@@ -54,10 +61,14 @@ class ChooseSessionDirectoryWidget(QWizardPage):
         self.open_button.clicked.connect(self.open_file_dialog)
         line1.addWidget(self.open_button)
 
-        # Create the list widget to display the file paths
+        # Create the list widget to display Importers
+        # TODO needs to be adjusted to configured Importers.
         self.list_widget = QListWidget()
-        self.list_widget.addItems(["FITS meta data import", "N.I.N.A. Session Metadata Plugin", "PixInsight(r) Subframe Selector Import"])
-
+        for i in self.import_factory.getMetaImporters():
+            item = QListWidgetItem(i.getShortName())
+            item.setToolTip(i.getTooltipDescription())
+            self.list_widget.addItem(item)
+        
         # Add widgets to the layout
         layout.addLayout(line1)
         layout.addWidget(self.list_widget)
@@ -107,8 +118,10 @@ class Worker(QThread):
 
 
 class ProgressBarWidget(QWizardPage):
-    def __init__(self):
+    def __init__(self, factory: ImportFactory):
         super().__init__()
+
+        self.import_factory = factory
 
         # Set up the layout
         layout = QVBoxLayout()
@@ -142,9 +155,10 @@ class ProgressBarWidget(QWizardPage):
         bar.setValue(bar.value() + value)
 
 class PageThree(QWizardPage):
-    def __init__(self):
+    def __init__(self, factory: ImportFactory):
         super().__init__()
         self.setTitle("Findings")
+        self.import_factory = factory
 
         #  |--------------|    
         #  | List Item 1  |
@@ -259,7 +273,8 @@ class CustomListWidget(QListWidget):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    wizard = ImportWizard()
+    factory = ImportFactory()
+    wizard = ImportWizard(factory)
     wizard.show()
     error = app.exec()
     print(error)
