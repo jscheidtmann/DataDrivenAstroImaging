@@ -1,4 +1,5 @@
-from ImporterBase import ImporterBase, ImporterMetaBase 
+from ImporterBase import ImporterBase, ImporterMetaBase
+from SessionData import SessionData 
 
 class FitsImporterMeta(ImporterMetaBase):
     def getShortName(self):
@@ -20,4 +21,7 @@ class FitsImporter(ImporterBase):
         return file.endswith('.fits') or file.endswith('.fit') or file.endswith('.fts')
 
     def process(self, file: str) -> bool:
+        return False
+    
+    def store(self, data: SessionData) -> bool:
         return False

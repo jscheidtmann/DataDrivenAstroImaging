@@ -1,11 +1,16 @@
 from ImporterBase import ImporterBase, ImporterMetaBase
 import os
+
+from SessionData import SessionData
 class PISubframeSelectorImporter(ImporterBase):
     def wantProcess(self, file: str) -> bool:
         basename = os.path.basename(file)
         return basename.startswith('SubframeSelector') or basename.startswith('MasterValues')
 
     def process(self, file: str) -> bool:
+        return False
+    
+    def store(self, data: SessionData) -> bool:
         return False
 
 class PISubframeSelectorImporterMeta(ImporterMetaBase):

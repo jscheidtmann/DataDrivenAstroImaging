@@ -1,12 +1,17 @@
 from ImporterBase import ImporterBase, ImporterMetaBase
 import os
 
+from SessionData import SessionData
+
 class SessionMetadataImporter(ImporterBase):
     def wantProcess(self, file: str) -> bool:
         basename = os.path.basename(file)
         return basename.startswith('AcquisitionDetails') or basename.startswith('ImageMetaData')
 
     def process(self, file: str) -> bool:
+        return False
+
+    def store(self, data: SessionData) -> bool:
         return False
 
 class SessionMetadataImporterMeta(ImporterMetaBase):

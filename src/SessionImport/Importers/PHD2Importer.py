@@ -1,10 +1,14 @@
 from ImporterBase import ImporterBase, ImporterMetaBase
+from SessionData import SessionData
 
 class PHD2Importer(ImporterBase):
     def wantProcess(self, file: str) -> bool:
         return file.startswith('PHDGuidelog')
 
     def process(self, file: str) -> bool:
+        return False
+    
+    def store(self, data: SessionData) -> bool:
         return False
 
 class PHD2ImporterMeta(ImporterMetaBase):

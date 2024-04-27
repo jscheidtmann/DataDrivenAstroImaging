@@ -3,9 +3,10 @@
 import importlib.util
 import os
 import sys
-from Importers.ImporterBase import ImporterMetaBase, ImporterBase
-from Importer import Importer
 import logging
+from SessionImport.Importers.ImporterBase import ImporterMetaBase, ImporterBase
+from SessionImport.Importer import Importer
+from SessionData import SessionData
 
 class ImportFactory:
     def __init__(self):
@@ -93,11 +94,15 @@ if __name__ == "__main__":
 
     factory = ImportFactory()
     imp = factory.getImporter()
-    imp.setImportDirectory(".")
-    imp.runImport()
+
+    for dir in sys.argv[1:]:
+        imp.setImportDirectory(dir)
+        imp.runImport()
     import time
     while imp.isrunning():
         imp.log.info("Waiting for import to finish") 
         time.sleep(1)
     imp.log.info("Import finished")
+    imp.log.info("Storing Data")
+    imp.storeData(SessionData())
     sys.exit(0)

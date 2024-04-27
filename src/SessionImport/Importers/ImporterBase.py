@@ -1,5 +1,6 @@
 from queue import Queue
 from threading import Thread
+from SessionData import SessionData
 
 class ImporterBase:
     def __init__(self):
@@ -83,6 +84,14 @@ class ImporterBase:
 
         This method is called in the interface thread and should return fast, so that the UI is responsive.
         If you need more processing, consider skipping items.
+        """
+        raise NotImplementedError("you called an abstract method, that you need to implement yourself!")
+
+    def store(self, data: SessionData) -> bool:
+        """
+        Store information in the passed SessionData object
+
+        If all data was stored, return true, else false.
         """
         raise NotImplementedError("you called an abstract method, that you need to implement yourself!")
 

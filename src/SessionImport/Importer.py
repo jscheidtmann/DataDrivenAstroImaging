@@ -1,4 +1,5 @@
-from Importers.ImporterBase import ImporterBase
+from SessionImport.Importers.ImporterBase import ImporterBase
+from SessionData import SessionData
 import os
 import logging
 
@@ -59,3 +60,10 @@ class Importer:
         for imp in self.importers:
             imp.stop()
         self.log.info("Import finalizing")
+
+    def storeData(self, data: SessionData) -> None:
+        self.log.info("Storing Data: start")
+        for imp in self.importers:
+            self.log.debug("Storing data from importer: %s", imp.__class__)
+            imp.store(data)
+        self.log.info("Storing Data: Done")
