@@ -780,7 +780,7 @@ if __name__ == "__main__":
 
     app = QApplication(sys.argv)
     # Apply the complete dark theme to your Qt App.
-    qdarktheme.setup_theme()
+    # qdarktheme.setup_theme()
 
     logger = logging.getLogger("ImagingSessionAnalysis")
     win = MainWindow(logger)
