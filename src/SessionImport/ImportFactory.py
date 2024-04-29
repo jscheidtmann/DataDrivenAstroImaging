@@ -93,9 +93,12 @@ if __name__ == "__main__":
     logging.getLogger().setLevel(logging.DEBUG)  
 
     factory = ImportFactory()
+    factory.log.info("Executing ImportFactory from commandline.")
     imp = factory.getImporter()
+    factory.log.info("Retrieved importers, running import.")
 
     for dir in sys.argv[1:]:
+        factory.log.info("Import directory: %s", dir)
         imp.setImportDirectory(dir)
         imp.runImport()
     import time

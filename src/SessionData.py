@@ -140,7 +140,7 @@ class SessionData:
 
         self.data = self.data.merge(df, on=DataColumn.FNAME)
 
-    def getFilters(self):
+    def getFailters(self):
         return list(set(self.data[Columns.FILTER]))
 
     def getFramesPerFilter(self, filter):

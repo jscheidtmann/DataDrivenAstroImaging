@@ -15,6 +15,6 @@ pyqtdarktheme
 # Development requirements are installed in the github workflow
 # You have to install these yourself:
 
-# python -m pip install flake8 flake8-pyproject pytest
+# python -m pip install flake8 flake8-pyproject pytest pytest-mock
 
 # Check the github workflow for invocations used in the build process

@@ -1,5 +1,7 @@
-from ImporterBase import ImporterBase, ImporterMetaBase
+from SessionImport.Importers.ImporterBase import ImporterBase, ImporterMetaBase
 from SessionData import SessionData 
+from astropy.io import fits
+import logging
 
 class FitsImporterMeta(ImporterMetaBase):
     def getShortName(self):
@@ -21,7 +23,17 @@ class FitsImporter(ImporterBase):
         return file.endswith('.fits') or file.endswith('.fit') or file.endswith('.fts')
 
     def process(self, file: str) -> bool:
-        return False
+        try:
+            header = fits.getheader(file)
+            return True
+        except OSError as e:
+            self.log.error("Skipping %s, due to IOError", file)
+            self.log.exception(e)
+            return False
+        except Exception as e:
+            self.log.error("Skipping %s, due to exception:", file)
+            self.log.exception(e)
+            return False
     
     def store(self, data: SessionData) -> bool:
-        return False
+        return data.add()
