@@ -7,7 +7,7 @@ pyinstaller==6.6.0
 PyQt6==6.6.1
 PyQt6_Charts==6.6.0
 PyQt6_sip==13.6.0
-scikit_image==0.22.0
+scikit_image==0.23.2
 # Note that pyqtdarktheme is published in PyPi with different versions for different platforms.
 # In order to make the build process workd DO NOT fix a version! (2024-04-23)
 pyqtdarktheme
