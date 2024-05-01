@@ -1,13 +1,14 @@
 import sys
-import os
 import random
 import time
-from PyQt6.QtWidgets import QApplication, QWizard, QWizardPage, QVBoxLayout, QHBoxLayout, QPushButton, \
-     QListWidget, QListWidgetItem, QWidget, QLabel, QFileDialog, QProgressBar, QLineEdit
-from PyQt6.QtCore import QSettings, Qt
+from PyQt6.QtWidgets import QApplication, QWizard, QWizardPage, QVBoxLayout, \
+    QHBoxLayout, QPushButton, QListWidget, QListWidgetItem, QWidget, QLabel, \
+    QFileDialog, QProgressBar, QLineEdit
+from PyQt6.QtCore import QSettings
 from PyQt6.QtCore import QThread, pyqtSignal
 
-from ImportFactory import ImportFactory
+from SessionImport.ImportFactory import ImportFactory
+
 
 class ImportWizard(QWizard):
     def __init__(self, factory: ImportFactory, parent=None):
@@ -17,11 +18,10 @@ class ImportWizard(QWizard):
         self.page1 = self.addPage(ChooseSessionDirectoryWidget(factory))
         self.page2 = self.addPage(self.page2widget)
         self.page3 = self.addPage(PageThree(factory))
-        
+ 
         self.setWindowTitle("Import Wizard - Fake it, befor you make it")
 
         self.currentIdChanged.connect(self.on_current_id_changed)
-
 
     def on_current_id_changed(self, id) -> None:
         if id == self.page1: 
@@ -47,7 +47,6 @@ class ChooseSessionDirectoryWidget(QWizardPage):
         self.settings = QSettings('Bayer', 'MyTestApp')
         self.init_ui()
 
- 
     def init_ui(self):
         # Set up the layout
         layout = QVBoxLayout()
@@ -68,7 +67,7 @@ class ChooseSessionDirectoryWidget(QWizardPage):
             item = QListWidgetItem(i.getShortName())
             item.setToolTip(i.getTooltipDescription())
             self.list_widget.addItem(item)
-        
+  
         # Add widgets to the layout
         layout.addLayout(line1)
         layout.addWidget(self.list_widget)
@@ -149,10 +148,11 @@ class ProgressBarWidget(QWizardPage):
     def initializePage(self) -> None:
         self.reset()
         return super().initializePage()
-    
+
     def update_progress(self, bar, value):
         # Update the progress bar's value
         bar.setValue(bar.value() + value)
+
 
 class PageThree(QWizardPage):
     def __init__(self, factory: ImportFactory):
@@ -168,7 +168,7 @@ class PageThree(QWizardPage):
         #  |--------------|  |-----------|
         #  | Prev  | Next |  | Show more |
         #  |--------------|  |-----------|
-         
+   
         layout = QHBoxLayout()
         column1 = QVBoxLayout()
 
@@ -183,7 +183,7 @@ class PageThree(QWizardPage):
         column1.addLayout(line1)
 
         layout.addLayout(column1)
-        
+
         column2 = QVBoxLayout()
         # Create the QLabel
         self.label = QLabel("Select an item from the list")
@@ -224,6 +224,7 @@ class PageThree(QWizardPage):
             # No item is selected
             self.label.setText("Select an item from the list")
 
+
 class CustomListItem(QWidget):
     def __init__(self, title, text, description):
         super().__init__()
@@ -239,7 +240,7 @@ class CustomListItem(QWidget):
         layout.addWidget(text_label)
 
         self.description = description
-        
+
         self.setLayout(layout)
 
     def getDescription(self):
@@ -270,6 +271,7 @@ class CustomListWidget(QListWidget):
 
         # Set the custom widget for the item
         self.setItemWidget(item, custom_item_widget)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
