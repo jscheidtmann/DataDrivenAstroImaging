@@ -1,5 +1,7 @@
 from astropy.io import fits
 import logging
+import sys
+
 
 def createMinimalFits(column, dest):
     # Create a minimal header
@@ -15,6 +17,7 @@ def createMinimalFits(column, dest):
     # Write to a FITS file
     hdu.writeto(dest, overwrite=True)
 
+
 def dropPictureData(src, dest):
     h = fits.getheader(src)
 
@@ -22,15 +25,22 @@ def dropPictureData(src, dest):
     hdu.writeto(dest, overwrite=True)
 
 
+def showHeader(src):
+    h = fits.getheader(src).cards
+    for item in h:
+        print(item)
+
 if __name__ == "__main__":
     chdlr = logging.StreamHandler()
     logging.getLogger().addHandler(chdlr)
     logging.getLogger().info("Test")
     logging.getLogger().setLevel(logging.DEBUG)  
 
-    createMinimalFits('AAA', 'fits/A.fits')
-    createMinimalFits('BBB', 'fits/B.fits')
-    createMinimalFits('CCC', 'fits/C.fits')
+    showHeader(sys.argv[1])
+
+    # createMinimalFits('AAA', 'fits/A.fits')
+    # createMinimalFits('BBB', 'fits/B.fits')
+    # createMinimalFits('CCC', 'fits/C.fits')
 
     # LIGHT
     # dropPictureData("d:\Bilder\\astroupload\\2024-01-10\M 81 M 82\LIGHT\\2024-01-10_20-40-01_NoFilter_-14.80_180.00s_0000.fits", "fits/LIGHT.fits")
