@@ -1,5 +1,7 @@
 
 from SessionImport.Importers.FitsImporter import FitsImporter
+from SessionImport.Importer import Importer
+import time
 
 def testEmptyFitsImporterCreation():
     FitsImporter()
@@ -31,7 +33,7 @@ def testImportNonExistingFits():
 
 def testProcessAFits(mocker):
     imp = FitsImporter()
-    f = "testdata/fits/A.fits"
+    f = "testdata/fits/session/A.fits"
     assert imp.wantProcess(f), "FitsImporter should accept 'A.fits'"
     assert imp.process(f), "FitsImporter could not process 'A.fits', that's wrong"
 
@@ -42,10 +44,10 @@ def testProcessAFits(mocker):
 
 def testProcessABFits(mocker):
     imp = FitsImporter()
-    f = "testdata/fits/A.fits"
+    f = "testdata/fits/session/A.fits"
     assert imp.wantProcess(f), "FitsImporter should accept 'A.fits'"
     assert imp.process(f), "FitsImporter could not process 'A.fits', that's wrong"
-    g = "testdata/fits/B.fits"
+    g = "testdata/fits/session/B.fits"
     assert imp.wantProcess(g), "FitsImporter should accept 'B.fits'"
     assert imp.process(g), "FitsImporter could not process 'B.fits', that's wrong"
 
@@ -56,8 +58,8 @@ def testProcessABFits(mocker):
 
 def testProcessABABFits(mocker):
     imp = FitsImporter()
-    f = "testdata/fits/A.fits"
-    g = "testdata/fits/B.fits"
+    f = "testdata/fits/session/A.fits"
+    g = "testdata/fits/session/B.fits"
     assert imp.wantProcess(f), "FitsImporter should accept 'A.fits'"
     assert imp.process(f), "FitsImporter could not process 'A.fits', that's wrong"
     assert imp.wantProcess(g), "FitsImporter should accept 'B.fits'"
@@ -72,3 +74,20 @@ def testProcessABABFits(mocker):
     # data.add.assert_called_once_with({"Id": ["A"], "filename": ["testdata/fits/A.fits"], "SIMPLE": [True], "BITPIX": [8], "NAXIS": [0], "AAA": [1]})
     data.add.assert_called_once_with({"Id": ["A", "B", "A", "B"], "filename": [f,g,f,g], "SIMPLE": [True,True,True,True], "BITPIX": [8,8,8,8], 
                                       "NAXIS": [0,0,0,0], "AAA": [1, None, 1, None], "BBB": [None, 1, None, 1]})
+    
+def testFitsImport(mocker):
+    importer = Importer()
+    imp = FitsImporter()
+    importer.addImporter(imp)
+    importer.setImportDirectory('testdata/fits/session/')
+    importer.runImport()
+    while importer.isrunning():
+        time.sleep(0.05)
+    
+    data = mocker.Mock()
+    importer.storeData(data)
+    # data.add.assert_called_once_with({"Id": ["A"], "filename": ["testdata/fits/A.fits"], "SIMPLE": [True], "BITPIX": [8], "NAXIS": [0], "AAA": [1]})
+    data.add.assert_called_once_with({"Id": ["A", "B", "C"], "filename": ["testdata/fits/session/A.fits", "testdata/fits/session/B.fits", "testdata/fits/session/C.fits"], 
+                                      "SIMPLE": [True,True,True], "BITPIX": [8,8,8], "NAXIS": [0,0,0], 
+                                      "AAA": [1, None, None], "BBB": [None, 1, None], "CCC": [None, None, 1]})
+    
