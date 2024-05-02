@@ -61,6 +61,6 @@ class FitsImporter(ImporterBase):
             self.log.error("Skipping %s, due to IOError", file)
             self.log.exception(e)
             return False
-   
+
     def store(self, data: SessionData) -> bool:
         return data.add(self.data)

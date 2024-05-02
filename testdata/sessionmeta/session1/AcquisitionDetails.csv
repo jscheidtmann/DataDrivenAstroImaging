@@ -1,0 +1,2 @@
+TargetName,RACoordinates,DECCoordinates,TelescopeName,FocalLength,FocalRatio,CameraName,PixelSize,BitDepth,ObserverLatitude,ObserverLongitude,ObserverElevation
+M 81 M 82,9h 55m 42s,"69° 18' 57""","Newton 8""",1000,5,ZWO ASI294MC Pro,4.63,16,51.1536,7.0931,240
