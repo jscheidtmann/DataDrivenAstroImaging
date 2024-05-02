@@ -40,7 +40,7 @@ def testProcessAFits(mocker):
     data = mocker.Mock()
     imp.store(data)
     # data.add.assert_called_once_with({"Id": ["A"], "filename": ["testdata/fits/A.fits"], "SIMPLE": [True], "BITPIX": [8], "NAXIS": [0], "AAA": [1]})
-    data.add.assert_called_once_with({"Id": ["A"], "filename": [f], "SIMPLE": [True], "BITPIX": [8], "NAXIS": [0], "AAA": [1]})
+    data.add.assert_called_once_with({"Id": {0: "A"}, "filename": {0:f}, "SIMPLE": {0:True}, "BITPIX": {0:8}, "NAXIS": {0:0}, "AAA": {0:1}})
 
 def testProcessABFits(mocker):
     imp = FitsImporter()
@@ -54,7 +54,8 @@ def testProcessABFits(mocker):
     data = mocker.Mock()
     imp.store(data)
     # data.add.assert_called_once_with({"Id": ["A"], "filename": ["testdata/fits/A.fits"], "SIMPLE": [True], "BITPIX": [8], "NAXIS": [0], "AAA": [1]})
-    data.add.assert_called_once_with({"Id": ["A", "B"], "filename": [f,g], "SIMPLE": [True,True], "BITPIX": [8,8], "NAXIS": [0,0], "AAA": [1, None], "BBB": [None, 1]})
+    data.add.assert_called_once_with({"Id": {0:"A", 1:"B"}, "filename": {0:f, 1:g}, "SIMPLE": {0:True,1:True}, "BITPIX": {0:8,1:8}, "NAXIS": {0:0,1:0}, 
+                                      "AAA": {0:1, 1:None}, "BBB": {0:None, 1:1}})
 
 def testProcessABABFits(mocker):
     imp = FitsImporter()
