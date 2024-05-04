@@ -6,6 +6,13 @@ import time
 def testEmptyFitsImporterCreation():
     FitsImporter()
 
+def testEmptyFitsImporterStoresNothing(mocker):
+    imp = FitsImporter()
+
+    data = mocker.Mock()
+    assert not imp.store(data), "FitsImporters stores, although nothing was imported? What goes?"
+    data.ass.assert_not_called()
+
 def testFitsAcceptance():
     imp = FitsImporter()
     assert imp.wantProcess("A.fits"), "FitsImporter does not process A.fits"

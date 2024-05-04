@@ -75,7 +75,11 @@ class FitsImporter(ImporterBase):
             return False
 
     def store(self, data: SessionData) -> bool:
-        return data.add(self.data)
+        if not self.data:  # empty
+            return False
+        else:
+            data.add(self.data)
+            return True
 
 if __name__ == "__main__":
     chdlr = logging.StreamHandler()
