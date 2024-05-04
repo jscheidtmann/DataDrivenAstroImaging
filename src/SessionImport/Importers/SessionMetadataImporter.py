@@ -19,19 +19,19 @@ class SessionMetadataImporter(ImporterBase):
 
     def process(self, file: str) -> bool:
         if not os.path.exists(file):
-            self.log.warn("File to import does not exist: %s", file)
+            self.log.warning("File to import does not exist: %s", file)
             return False
         
         # The N.I.N.A. plugin creates two files in the same directory
         if file.endswith("ImageMetaData.csv"):
             self.log.info("Import ImageMetaData: %s", file)
             self.imd = file
-            print(os.path.dirname(self.imd))
+            # print(os.path.dirname(self.imd))
         
         if file.endswith("AcquisitionDetails.csv"):
             self.log.info("Import AcquisitionDetails: %s", file)
             self.acd = file
-            print(os.path.dirname(self.acd))
+            # print(os.path.dirname(self.acd))
 
         # Once both files have been detected, import them
         if self.imd is not None and self.acd is not None and os.path.dirname(self.imd) == os.path.dirname(self.acd):
@@ -46,7 +46,7 @@ class SessionMetadataImporter(ImporterBase):
                     self.df = pd.concat([self.df, df_acd.merge(df_meta, how='cross')])    
                 self.log.debug("Imported dataframe size %s", str(self.df.shape))
             except (OSError, Exception) as e:
-                self.log.error("Skipping %s, due to IOError", file)
+                self.log.error("Skipping %s, due to Error", file)
                 self.log.exception(e)
                 return False
             else:

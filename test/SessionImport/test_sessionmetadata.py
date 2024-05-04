@@ -6,6 +6,14 @@ from pandas import DataFrame
 def testEmptySessionMetaDataImporterCreation():
     SessionMetadataImporter()
 
+def testEmptySessionMetaFailsStore(mocker):
+    imp = SessionMetadataImporter()
+
+    data = mocker.Mock()
+    assert not imp.store(data), "Storing worked when nothing was imported? What's that?"
+    data.add.assert_not_called()
+
+
 def testSessionMetadataAcceptance():
     imp = SessionMetadataImporter()
     assert imp.wantProcess("ImageMetaData.csv"), "SessionMetadataImporter does not process ImageMetaData.csv"
@@ -72,6 +80,14 @@ def are_dicts_equal(dict1, dict2):
 
     return True
 
+def testSessionMetaEmptyFiles(mocker):
+    imp = SessionMetadataImporter()
+    f = "testdata/sessionmeta/invalid/ImageMetaData.csv"
+    assert imp.wantProcess(f), "SessionMetadataImporter should accept 'ImageMetaData.csv'"
+    assert imp.process(f), "SessionMetadataImporter could not process empty 'ImageMetaData.csv', that's wrong"
+    g = "testdata/sessionmeta/invalid/AcquisitionDetails.csv"
+    assert imp.wantProcess(g), "SessionMetadataImporter should accept 'AcquisitionDetails.csv'"
+    assert not imp.process(g), "SessionMetadataImporter should not process second file, as both files are empty"
 
 def testProcessImageMetaDataAcqDetails(mocker):
     imp = SessionMetadataImporter()
