@@ -1,4 +1,4 @@
-from ImporterBase import ImporterBase, ImporterMetaBase
+from SessionImport.Importers.ImporterBase import ImporterBase, ImporterMetaBase
 from SessionData import SessionData
 
 class PHD2Importer(ImporterBase):
