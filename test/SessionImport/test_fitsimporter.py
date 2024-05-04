@@ -44,17 +44,17 @@ def testProcessAFits(mocker):
 
 def testProcessABFits(mocker):
     imp = FitsImporter()
-    f = "testdata/fits/session/A.fits"
-    assert imp.wantProcess(f), "FitsImporter should accept 'A.fits'"
-    assert imp.process(f), "FitsImporter could not process 'A.fits', that's wrong"
-    g = "testdata/fits/session/B.fits"
-    assert imp.wantProcess(g), "FitsImporter should accept 'B.fits'"
-    assert imp.process(g), "FitsImporter could not process 'B.fits', that's wrong"
+    a = "testdata/fits/session/A.fits"
+    assert imp.wantProcess(a), "FitsImporter should accept 'A.fits'"
+    assert imp.process(a), "FitsImporter could not process 'A.fits', that's wrong"
+    b = "testdata/fits/session/B.fits"
+    assert imp.wantProcess(b), "FitsImporter should accept 'B.fits'"
+    assert imp.process(b), "FitsImporter could not process 'B.fits', that's wrong"
 
     data = mocker.Mock()
     imp.store(data)
     # data.add.assert_called_once_with({"Id": ["A"], "filename": ["testdata/fits/A.fits"], "SIMPLE": [True], "BITPIX": [8], "NAXIS": [0], "AAA": [1]})
-    data.add.assert_called_once_with({"Id": {0:"A", 1:"B"}, "filename": {0:f, 1:g}, "SIMPLE": {0:True,1:True}, "BITPIX": {0:8,1:8}, "NAXIS": {0:0,1:0}, 
+    data.add.assert_called_once_with({"Id": {0:"A", 1:"B"}, "filename": {0:a, 1:b}, "SIMPLE": {0:True,1:True}, "BITPIX": {0:8,1:8}, "NAXIS": {0:0,1:0}, 
                                       "AAA": {0:1, 1:None}, "BBB": {0:None, 1:1}})
 
 def testProcessABABFits(mocker):
@@ -73,8 +73,9 @@ def testProcessABABFits(mocker):
     data = mocker.Mock()
     imp.store(data)
     # data.add.assert_called_once_with({"Id": ["A"], "filename": ["testdata/fits/A.fits"], "SIMPLE": [True], "BITPIX": [8], "NAXIS": [0], "AAA": [1]})
-    data.add.assert_called_once_with({"Id": ["A", "B", "A", "B"], "filename": [f,g,f,g], "SIMPLE": [True,True,True,True], "BITPIX": [8,8,8,8], 
-                                      "NAXIS": [0,0,0,0], "AAA": [1, None, 1, None], "BBB": [None, 1, None, 1]})
+    data.add.assert_called_once_with({"Id": {0:"A", 1:"B", 2:"A", 3:"B"}, "filename": {0:f,1:g,2:f,3:g}, "SIMPLE": {0:True,1:True,2:True,3:True}, 
+                                      "BITPIX": {0:8,1:8,2:8,3:8}, "NAXIS": {0:0,1:0,2:0,3:0}, 
+                                      "AAA": {0:1, 1:None, 2:1, 3:None}, "BBB": {0:None, 1:1, 2:None, 3:1}})
     
 def testFitsImport(mocker):
     importer = Importer()
@@ -88,7 +89,22 @@ def testFitsImport(mocker):
     data = mocker.Mock()
     importer.storeData(data)
     # data.add.assert_called_once_with({"Id": ["A"], "filename": ["testdata/fits/A.fits"], "SIMPLE": [True], "BITPIX": [8], "NAXIS": [0], "AAA": [1]})
-    data.add.assert_called_once_with({"Id": ["A", "B", "C"], "filename": ["testdata/fits/session/A.fits", "testdata/fits/session/B.fits", "testdata/fits/session/C.fits"], 
-                                      "SIMPLE": [True,True,True], "BITPIX": [8,8,8], "NAXIS": [0,0,0], 
-                                      "AAA": [1, None, None], "BBB": [None, 1, None], "CCC": [None, None, 1]})
-    
+    data.add.assert_called_once_with({"Id": {0:"A", 1:"B", 2:"C"}, "filename": {0:"testdata/fits/session/A.fits", 1:"testdata/fits/session/B.fits", 2:"testdata/fits/session/C.fits"},
+                                      "SIMPLE": {0:True,1:True,2:True}, "BITPIX": {0:8,1:8,2:8}, "NAXIS": {0:0,1:0,2:0}, 
+                                      "AAA": {0:1, 1:None, 2:None}, "BBB": {0:None, 1:1, 2:None}, "CCC": {0:None, 1:None, 2:1}})
+
+
+if __file__ == "__main__":
+    imp = FitsImporter()
+    f = "testdata/fits/session/A.fits"
+    assert imp.wantProcess(f), "FitsImporter should accept 'A.fits'"
+    assert imp.process(f), "FitsImporter could not process 'A.fits', that's wrong"
+    g = "testdata/fits/session/B.fits"
+    assert imp.wantProcess(g), "FitsImporter should accept 'B.fits'"
+    assert imp.process(g), "FitsImporter could not process 'B.fits', that's wrong"
+
+    data = mocker.Mock()
+    imp.store(data)
+    # data.add.assert_called_once_with({"Id": ["A"], "filename": ["testdata/fits/A.fits"], "SIMPLE": [True], "BITPIX": [8], "NAXIS": [0], "AAA": [1]})
+    data.add.assert_called_once_with({"Id": {0:"A", 1:"B"}, "filename": {0:f, 1:g}, "SIMPLE": {0:True,1:True}, "BITPIX": {0:8,1:8}, "NAXIS": {0:0,1:0}, 
+                                      "AAA": {0:1, 1:None}, "BBB": {0:None, 1:1}})
