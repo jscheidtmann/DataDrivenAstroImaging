@@ -102,6 +102,7 @@ def testFitsImport(mocker):
 
 
 if __file__ == "__main__":
+    from unittest.mock import Mock
     imp = FitsImporter()
     f = "testdata/fits/session/A.fits"
     assert imp.wantProcess(f), "FitsImporter should accept 'A.fits'"
@@ -110,7 +111,7 @@ if __file__ == "__main__":
     assert imp.wantProcess(g), "FitsImporter should accept 'B.fits'"
     assert imp.process(g), "FitsImporter could not process 'B.fits', that's wrong"
 
-    data = mocker.Mock()
+    data = Mock()
     imp.store(data)
     # data.add.assert_called_once_with({"Id": ["A"], "filename": ["testdata/fits/A.fits"], "SIMPLE": [True], "BITPIX": [8], "NAXIS": [0], "AAA": [1]})
     data.add.assert_called_once_with({"Id": {0:"A", 1:"B"}, "filename": {0:f, 1:g}, "SIMPLE": {0:True,1:True}, "BITPIX": {0:8,1:8}, "NAXIS": {0:0,1:0}, 
