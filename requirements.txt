@@ -1,7 +1,7 @@
 astropy==6.0.1
 colour==0.1.5
 colour_demosaicing==0.2.5
-pandas==2.2.1
+pandas==2.2.2
 photutils==1.12.0
 pyinstaller==6.6.0
 PyQt6==6.7.0
